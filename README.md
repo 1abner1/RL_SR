@@ -1,5 +1,5 @@
 # Pytorch_RL_SR
-# run amrl environment
+# run AMRL 
 # install python=3.9
 #pip install mlagents==0.25.0
 #pip install torch gym numpy==1.20.3
