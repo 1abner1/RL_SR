@@ -1,4 +1,4 @@
-# Pytorch_RL_SR
+# RL_SR
 # run AMRL 
 # install python=3.9
 #pip install mlagents==0.25.0
