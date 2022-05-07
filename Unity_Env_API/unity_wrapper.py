@@ -169,14 +169,15 @@ class UnityWrapper:
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
-    env = UnityWrapper(train_mode=True, base_port=5004,file_name=r"D:\Pytorch_RL_SR\algorithm\AMRL\testtask\car_seg_avoid.exe")         # 创立环境
+    env = UnityWrapper(train_mode=True, base_port=5004)#,file_name=r"D:\Pytorch_RL_SR\algorithm\AMRL\testtask\car_seg_avoid.exe")         # 创立环境
     obs_shape_list, d_action_size, c_action_size = env.init()   # 环境初始化
-    # print("obs_shape_list",obs_shape_list)
-    print("d_action",d_action_size)
-    print("d_action",c_action_size)
+    # print("obs_shape_list.shap",obs_shape_list.shape())
+    # print("d_action",d_action_size)
+    # print("d_action",c_action_size)
 
     for i in range(100):
         obs_list = env.reset()
+        # state_dim = obs_shape_list[0]
         print("第一次obs_list",obs_list)                                  # 环境reset
         n_agents = obs_list[0].shape[0]
         for j in range(100):
@@ -190,8 +191,8 @@ if __name__ == "__main__":
             # print(i, j)
             obs_list, reward, done, max_step = env.step(d_action, c_action)  #环境step
             # print("第二次obs_list",obs_list)
-            print(f'reward1111 +{reward}')
-            print("done",done)
-            print("max_step",max_step)
+            # print(f'reward1111 +{reward}')
+            # print("done",done)
+            # print("max_step",max_step)
 
     env.close()

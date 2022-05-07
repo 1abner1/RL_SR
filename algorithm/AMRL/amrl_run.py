@@ -13,6 +13,7 @@ import torch
 import argparse
 import algorithm.s2rlog.makelog as mlog
 from algorithm.AMRL.sorft_attention.soft_attention import soft_attention_net
+from image_show.image_show import Unity_image_show
 
 def get_args():
     parser = argparse.ArgumentParser()
@@ -79,22 +80,36 @@ def sorft_attention():
 def main():
     # 制作虚实结合的log 文件
     mlog1 = mlog.run()
-    # logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.INFO)
     # 获得参数信息
     parmater = get_args()
-    env = UnityWrapper(train_mode=True, base_port=5004,file_name=r"D:\Pytorch_RL_SR\algorithm\AMRL\testtask\car_seg_avoid.exe")
+    # par1 = parmater("--task")
+    env = UnityWrapper(train_mode=True, base_port=5004)#,file_name=r"D:\Pytorch_RL_SR\algorithm\AMRL\testtask\car_seg_avoid.exe")
     obs_shape_list, d_action_dim, c_action_dim = env.init()
     state_dim = obs_shape_list
-    print("状态维度：",state_dim)
+    print("总的状态维度：",state_dim) #(前摄像头图像，左摄像头图像，右摄像头图像，射线数据，目标位置和速度)
+    print("前摄像头维度：", state_dim[0])
+    print("左摄像头维度：", state_dim[1])
+    print("右摄像头维度：", state_dim[2])
+    print("雷达维度：", state_dim[3])
+    print("向量维度：", state_dim[4])
 
     #train makeure task
-    for episode in range(2):
-        obs_list = env.reset
-        # print("开始运行到下一步")
-        print("获得观察值",obs_list)
+    for episode in range(100):
+        obs_list = env.reset()
+        # 视觉信息
+        forward_image = obs_list[0][0]
+        left_image = obs_list[1][0]
+        right_image = obs_list[2][0]
+        #雷达射线
+        ray = obs_list[3][0]
+        #向量信息
+        position = obs_list[4][0]
+        #显示图片
+        Unity_image_show("forward-left-right",forward_image,left_image,right_image)
         for step in range(2):
-            print("环境没有问题")
-
+            # print("环境没有问题")
+            pass
 
 if __name__ == "__main__":
     main()
