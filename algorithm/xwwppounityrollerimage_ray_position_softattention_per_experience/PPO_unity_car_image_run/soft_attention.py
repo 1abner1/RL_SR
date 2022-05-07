@@ -8,7 +8,6 @@ class MLP(nn.Module):#自定义类 继承nn.Module
 
     def __init__(self):#初始化函数
         super(MLP, self).__init__()#继承父类初始化函数
-
         self.model = nn.Sequential(
             nn.Linear(8, 64),
             nn.ReLU(inplace=True),

@@ -60,3 +60,22 @@ class CNNNet(nn.Module):
 
 
 
+def image(state_image):
+    obs_arry = np.array(state_image)
+    obs_tensor = torch.from_numpy(obs_arry)
+    obs_tensor_input = obs_tensor.unsqueeze(dim=0)
+    changge_obs_state = obs_tensor_input.view(1, 3, 84, 84)
+    state = changge_obs_state
+    net = CNNNet()
+    OUTPUT_obs = net.forward(state)
+    out_obs_array = OUTPUT_obs[0]
+    out_obs_array = out_obs_array.detach().numpy()
+    input_obs_state = torch.from_numpy(out_obs_array)
+    state = input_obs_state.unsqueeze(dim=0)
+    state = state * 10
+    # print("state",state)
+    return state
+    # 需要将多种传感器数据进行融合增加这一步
+    state_image1 = state
+    # print("卷积之后的状态111111111111env.reset产生的",state_image1)
+    # 结束图像处理

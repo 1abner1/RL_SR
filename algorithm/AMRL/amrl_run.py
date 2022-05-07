@@ -14,6 +14,8 @@ import argparse
 import algorithm.s2rlog.makelog as mlog
 from algorithm.AMRL.sorft_attention.soft_attention import soft_attention_net
 from image_show.image_show import Unity_image_show
+from algorithm.AMRL.Image_deal.image_to_conv import image
+import torch.nn as nn
 
 def get_args():
     parser = argparse.ArgumentParser()
@@ -61,21 +63,26 @@ def meta_train():
    print(task_pool["task1"])
 
 
-def perceaction(self,state):
-    # 同质感知数据处理（将三个图像摄像头数据通过卷积层）
-    forward_image = CNNNet()
-    net = CNNNet()
-    OUTPUT_obs = net.forward(state)
-    out_obs_array = OUTPUT_obs[0]
-    out_obs_array = out_obs_array.detach().numpy()
-    input_obs_state = torch.from_numpy(out_obs_array)
-
-    return input_obs_state
-
+def perceaction_image(state_image):
+    state_obs_image = image(state_image)
+    return state_obs_image
 
 def sorft_attention():
     soft_attention_net1=soft_attention_net()
 
+def ray_deal(state_ray):
+    # 雷达数据处理
+    lay = nn.Linear(404, 8)
+    # state_ray = state_ray.detach()
+    state_ray_tensor = torch.from_numpy(state_ray)
+    state_ray1 = lay(state_ray_tensor)
+    state_ray_output = state_ray1.detach()
+    return state_ray_output
+
+def position_deal(state_posi):
+    state_posi = torch.from_numpy(state_posi)
+    state_posi1 = state_posi
+    return state_posi1
 
 def main():
     # 制作虚实结合的log 文件
@@ -107,6 +114,20 @@ def main():
         position = obs_list[4][0]
         #显示图片
         Unity_image_show("forward-left-right",forward_image,left_image,right_image)
+        #把图像数据提取特征变成一个8维的向量
+        forward_image_deal_8v = perceaction_image(forward_image)
+        left_image_deal_8v = perceaction_image(left_image)
+        right_image_deal_8v = perceaction_image(right_image)
+        print("forward处理的数据",forward_image_deal_8v)
+        print("left_image_deal_8v处理的数据", left_image_deal_8v)
+        print("right_image_deal_8v处理的数据", right_image_deal_8v)
+        # 雷达射线数据处理成8维
+        ray_output = ray_deal(ray)
+        print("输出雷达数据",ray_output)
+        # 位置向量数据
+        position_output = position_deal(position)
+        print("位置向量输出",position_output)
+
         for step in range(2):
             # print("环境没有问题")
             pass
