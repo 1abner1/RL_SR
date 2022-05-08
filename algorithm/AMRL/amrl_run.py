@@ -89,6 +89,48 @@ def position_deal(state_posi):
     state_posi1 = state_posi
     return state_posi1
 
+def fusion_sensor_date(obs_list):
+    # ---------------视觉信息----------------------
+    forward_image = obs_list[0][0]
+    left_image = obs_list[1][0]
+    right_image = obs_list[2][0]
+    # -----------------雷达射线-----------------------
+    ray = obs_list[3][0]
+    # -----------------向量信息-----------------------
+    position = obs_list[4][0]
+    # -----------------显示图片-----------------------
+    # Unity_image_show("forward-left-right",forward_image,left_image,right_image)
+    # ------------把图像数据提取特征变成一个8维的向量------
+    forward_image_deal_8v = perceaction_image(forward_image)
+    left_image_deal_8v = perceaction_image(left_image)
+    right_image_deal_8v = perceaction_image(right_image)
+    print("forward处理的数据", forward_image_deal_8v)
+    print("left_image_deal_8v处理的数据", left_image_deal_8v)
+    print("right_image_deal_8v处理的数据", right_image_deal_8v)
+    # ---------------雷达射线数据处理成8维--------------
+    ray_output = ray_deal(ray)
+    print("输出雷达数据", ray_output)
+    # -----------------位置向量数据--------------------
+    position_output = position_deal(position)
+    print("位置向量输出", position_output)
+    # ---------------------------感知层---------------------------------
+    # ------------------------融合感知数据------------------
+    w1 = 0.6
+    w2 = 0.2
+    w3 = 0.2
+    a1 = 0.4
+    a2 = 0.3
+    a3 = 0.3
+    fusion_same_image = w1 * forward_image_deal_8v + w2 * left_image_deal_8v + w3 * right_image_deal_8v
+    fusion_dif_sensor = a1 * forward_image_deal_8v + a2 * ray_output + a3 * position_output + a3 * position_output
+    total_fusion = fusion_same_image + fusion_dif_sensor
+    # print("fusion_same_image", fusion_same_image)
+    # print("fusion_dif_sensor", fusion_dif_sensor)
+    # print("total_fusion", total_fusion)
+
+    return total_fusion
+    # ------------------------融合感知数据------------------
+
 def main():
     # 制作虚实结合的log 文件
     mlog1 = mlog.run()
@@ -110,43 +152,8 @@ def main():
     for episode in range(100):
         #---------------------------感知层--------------------------------
         obs_list = env.reset()
-        # 视觉信息
-        forward_image = obs_list[0][0]
-        left_image = obs_list[1][0]
-        right_image = obs_list[2][0]
-        #雷达射线
-        ray = obs_list[3][0]
-        #向量信息
-        position = obs_list[4][0]
-        #显示图片
-        # Unity_image_show("forward-left-right",forward_image,left_image,right_image)
-        #把图像数据提取特征变成一个8维的向量
-        forward_image_deal_8v = perceaction_image(forward_image)
-        left_image_deal_8v = perceaction_image(left_image)
-        right_image_deal_8v = perceaction_image(right_image)
-        print("forward处理的数据",forward_image_deal_8v)
-        print("left_image_deal_8v处理的数据", left_image_deal_8v)
-        print("right_image_deal_8v处理的数据", right_image_deal_8v)
-        # 雷达射线数据处理成8维
-        ray_output = ray_deal(ray)
-        print("输出雷达数据",ray_output)
-        # 位置向量数据
-        position_output = position_deal(position)
-        print("位置向量输出",position_output)
-        #---------------------------感知层---------------------------------
-        # ------------------------融合感知数据------------------
-        w1 = 0.6
-        w2 = 0.2
-        w3 = 0.2
-        a1 = 0.4
-        a2 = 0.3
-        a3 = 0.3
-        fusion_same_image = w1*forward_image_deal_8v+w2*left_image_deal_8v+w3*right_image_deal_8v
-        fusion_dif_sensor = a1*forward_image_deal_8v+a2*ray_output+a3*position_output+a3*position_output
-        total_fusion = fusion_same_image +  fusion_dif_sensor
-        print("fusion_same_image",fusion_same_image)
-        print("fusion_dif_sensor", fusion_dif_sensor)
-        # ------------------------融合感知数据------------------
+        total_fusion_sensor_date = fusion_sensor_date(obs_list)
+        print("total_fusion_sensor_date",total_fusion_sensor_date)
         for step in range(2):
             # print("环境没有问题")
             pass
