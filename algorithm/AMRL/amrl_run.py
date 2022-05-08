@@ -134,6 +134,19 @@ def main():
         position_output = position_deal(position)
         print("位置向量输出",position_output)
         #---------------------------感知层---------------------------------
+        # ------------------------融合感知数据------------------
+        w1 = 0.6
+        w2 = 0.2
+        w3 = 0.2
+        a1 = 0.4
+        a2 = 0.3
+        a3 = 0.3
+        fusion_same_image = w1*forward_image_deal_8v+w2*left_image_deal_8v+w3*right_image_deal_8v
+        fusion_dif_sensor = a1*forward_image_deal_8v+a2*ray_output+a3*position_output+a3*position_output
+        total_fusion = fusion_same_image +  fusion_dif_sensor
+        print("fusion_same_image",fusion_same_image)
+        print("fusion_dif_sensor", fusion_dif_sensor)
+        # ------------------------融合感知数据------------------
         for step in range(2):
             # print("环境没有问题")
             pass
