@@ -3,6 +3,7 @@
 #pip install mlagents==0.25.0
 #pip install torch gym numpy==1.20.3
 #4.使用cuda 10.2  pip3 install torch==1.8.1+cu102 torchvision==0.9.1+cu102 torchaudio===0.8.1 -f https://download.pytorch.org/whl/torch_stable.html
+# https://github.com/Unity-Technologies/ml-agents
 import numpy as np
 import metalearn as ml
 import logging
@@ -99,7 +100,7 @@ def fusion_sensor_date(obs_list):
     # -----------------向量信息-----------------------
     position = obs_list[4][0]
     # -----------------显示图片-----------------------
-    # Unity_image_show("forward-left-right",forward_image,left_image,right_image)
+    Unity_image_show("forward-left-right",forward_image,left_image,right_image)
     # ------------把图像数据提取特征变成一个8维的向量------
     forward_image_deal_8v = perceaction_image(forward_image)
     left_image_deal_8v = perceaction_image(left_image)
@@ -131,6 +132,18 @@ def fusion_sensor_date(obs_list):
     return total_fusion
     # ------------------------融合感知数据------------------
 
+def random_move():
+    # n_agents = obs_list[0].shape[0]
+    # for j in range(100):
+    #     d_action, c_action = None, None
+    #     n_agents = 1
+    #     if d_action_size:
+    #         d_action = np.random.randint(0, d_action_size, size=n_agents)
+    #         d_action = np.eye(d_action_size, dtype=np.int32)[d_action]
+    #     if c_action_size:
+    #         c_action = np.random.randn(n_agents, c_action_size)
+    #     obs_list, reward, done, max_step = env.step(d_action, c_action)  # 环境step
+    pass
 def main():
     # 制作虚实结合的log 文件
     mlog1 = mlog.run()
@@ -138,7 +151,7 @@ def main():
     # 获得参数信息
     parmater = get_args()
     # par1 = parmater("--task")
-    env = UnityWrapper(train_mode=True, base_port=5004,file_name=r"D:\RL_SR\envs\test\car_seg_avoid.exe")
+    env = UnityWrapper(train_mode=True, base_port=5004)#,file_name=r"D:\RL_SR\envs\test\car_seg_avoid.exe")
     obs_shape_list, d_action_dim, c_action_dim = env.init()
     state_dim = obs_shape_list
     print("总的状态维度：",state_dim) #(前摄像头图像，左摄像头图像，右摄像头图像，射线数据，目标位置和速度)
@@ -154,6 +167,10 @@ def main():
         obs_list = env.reset()
         total_fusion_sensor_date = fusion_sensor_date(obs_list)
         print("total_fusion_sensor_date",total_fusion_sensor_date)
+        c_action = np.random.randn(1, 2)
+        print("c_action",c_action)
+        d_action = None
+        obs_list, reward, done, max_step = env.step(d_action, c_action)
         for step in range(2):
             # print("环境没有问题")
             pass
