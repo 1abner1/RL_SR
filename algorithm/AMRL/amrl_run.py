@@ -116,11 +116,11 @@ def fusion_sensor_date(obs_list):
     # ---------------------------感知层---------------------------------
     # ------------------------融合感知数据------------------
     w1 = torch.tensor(0.6, dtype=torch.float32, requires_grad=True)
-    w2 = 0.2 #torch.tensor(0.2, dtype=torch.float32, requires_grad=True)
-    w3 = 0.2 #torch.tensor(0.2, dtype=torch.float32, requires_grad=True)
-    a1 = 0.4 #torch.tensor(0.4, dtype=torch.float32, requires_grad=True)
-    a2 = 0.3 #torch.tensor(0.3, dtype=torch.float32, requires_grad=True)
-    a3 = 0.3 #torch.tensor(0.3, dtype=torch.float32, requires_grad=True)
+    w2 = torch.tensor(0.2, dtype=torch.float32, requires_grad=True)
+    w3 = torch.tensor(0.2, dtype=torch.float32, requires_grad=True)
+    a1 = torch.tensor(0.4, dtype=torch.float32, requires_grad=True)
+    a2 = torch.tensor(0.3, dtype=torch.float32, requires_grad=True)
+    a3 = torch.tensor(0.3, dtype=torch.float32, requires_grad=True)
     fusion_same_image = w1 * forward_image_deal_8v + w2 * left_image_deal_8v + w3 * right_image_deal_8v
     fusion_dif_sensor = a1 * forward_image_deal_8v + a2 * ray_output + a3 * position_output + a3 * position_output
     total_fusion = fusion_same_image + fusion_dif_sensor
