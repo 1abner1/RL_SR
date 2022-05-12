@@ -84,45 +84,50 @@ def draw_line(data_file, label, color, max_min_mean_sm=6, smooth_sm=40):
                      alpha=0.3)
 
 
-plt.figure()
 
-data_files_path = [r'D:\RL_SR\plot\AMRL_data\reward\run-car_unknow_target_place3_carconavoid-tag-Environment_Cumulative Reward.csv',
-                   r'D:\RL_SR\plot\AMRL_data\reward\run-car_unknow_target_place4_carconavoid-tag-Environment_Cumulative Reward.csv',
-                   r'D:\RL_SR\plot\AMRL_data\reward\run-car_unknow_target_place5_carconavoid-tag-Environment_Cumulative Reward.csv',
-                   r'D:\RL_SR\plot\AMRL_data\reward\run-carconavoid1_carconavoid-tag-Environment_Cumulative Reward.csv',
-                   r'D:\RL_SR\plot\AMRL_data\reward\run-carconavoid2_carconavoid-tag-Environment_Cumulative Reward.csv',
-                   r'D:\RL_SR\plot\AMRL_data\reward\run-carconavoid3_carconavoid-tag-Environment_Cumulative Reward.csv',
-                   r'D:\RL_SR\plot\AMRL_data\reward\run-carconavoid4_carconavoid-tag-Environment_Cumulative Reward.csv',
-                   r'D:\RL_SR\plot\AMRL_data\reward\run-ppo_carconavoid-tag-Environment_Cumulative Reward.csv'
-                   ]
+def curve_plot():
+    plt.figure()
 
-labels = ['MAML',
-          'EPG',
-          'RL2',
-          'PEAL',
-          'PPO',
-          'AMRL_no_exper',
-          'AMRL_ICM',
-          'AMR(OURS)'
-          ]
+    data_files_path = [r'D:\RL_SR\plot\AMRL_data\reward\run-car_unknow_target_place3_carconavoid-tag-Environment_Cumulative Reward.csv',
+                       r'D:\RL_SR\plot\AMRL_data\reward\run-car_unknow_target_place4_carconavoid-tag-Environment_Cumulative Reward.csv',
+                       r'D:\RL_SR\plot\AMRL_data\reward\run-car_unknow_target_place5_carconavoid-tag-Environment_Cumulative Reward.csv',
+                       r'D:\RL_SR\plot\AMRL_data\reward\run-carconavoid1_carconavoid-tag-Environment_Cumulative Reward.csv',
+                       r'D:\RL_SR\plot\AMRL_data\reward\run-carconavoid2_carconavoid-tag-Environment_Cumulative Reward.csv',
+                       r'D:\RL_SR\plot\AMRL_data\reward\run-carconavoid3_carconavoid-tag-Environment_Cumulative Reward.csv',
+                       r'D:\RL_SR\plot\AMRL_data\reward\run-carconavoid4_carconavoid-tag-Environment_Cumulative Reward.csv',
+                       r'D:\RL_SR\plot\AMRL_data\reward\run-ppo_carconavoid-tag-Environment_Cumulative Reward.csv'
+                       ]
 
-colors = ['r','g','m','y','olive','c','orange','b']
+    labels = ['MAML',
+              'EPG',
+              'RL2',
+              'PEAL',
+              'PPO',
+              'AMRL_no_exper',
+              'AMRL_ICM',
+              'AMR(OURS)'
+              ]
 
-smooth_sms = [2,2,2,2,2,2,2,2]
+    colors = ['r','g','m','y','olive','c','orange','b']
 
-for data_file_path, label, color, smooth_sm in zip(data_files_path, labels, colors, smooth_sms):
-    draw_line(data_file=data_file_path,
-              label=label,
-              color=color,
-              max_min_mean_sm=20,
-              smooth_sm=smooth_sm)
+    smooth_sms = [2,2,2,2,2,2,2,2]
 
-#figure的具体设置需要在直线等画完了在进行
-plt.xlabel("Step")#横坐标名字
-plt.ylabel("Reward")#纵坐标名字
-#plt.legend(loc="best")#图例
-plt.legend(loc="lower right")#图例
-# plt.ylim(-3.5, 0)
-plt.xlim(0, 300000)
-plt.savefig("Reward.pdf")
-plt.show()
+    for data_file_path, label, color, smooth_sm in zip(data_files_path, labels, colors, smooth_sms):
+        draw_line(data_file=data_file_path,
+                  label=label,
+                  color=color,
+                  max_min_mean_sm=20,
+                  smooth_sm=smooth_sm)
+
+    #figure的具体设置需要在直线等画完了在进行
+    plt.xlabel("Step")#横坐标名字
+    plt.ylabel("Reward")#纵坐标名字
+    #plt.legend(loc="best")#图例
+    plt.legend(loc="lower right")#图例
+    # plt.ylim(-3.5, 0)
+    plt.xlim(0, 300000)
+    plt.savefig("Reward.pdf")
+    plt.show()
+
+
+curve_plot()
