@@ -8,3 +8,5 @@
 office train:
 mlagents-learn "D:\RL_SR\Unity_office\ppo_carconavoid.yaml"  --env="D:\RL_SR\envs\test\car_seg_avoid.exe" --width=1000   --height=1000  --num-envs=1 --torch-device "cuda"  --time-scale=20 --run-id carconavoid1
 
+deleate office run results , data is big, can not update
+
