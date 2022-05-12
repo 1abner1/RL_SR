@@ -191,7 +191,7 @@ def train():
         # state_dim = state_dim[0]*state_dim[1]*state_dim[2]
     ppo_agent = PPO(state_dim, action_dim, lr_actor, lr_critic, gamma, K_epochs, eps_clip, has_continuous_action_space, action_std)
     # 是否加载模型
-    load_model= False
+    load_model = False
     if (load_model):
         ppo_agent.load(checkpoint_path)   # 打开加载权重继续训练
         print("加载上次训练模型继续训练")

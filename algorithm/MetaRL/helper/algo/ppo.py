@@ -32,6 +32,9 @@ class PPO:
         # Computes the new log probability from the updated model
         new_log_probs = []
         values = []
+        print("ppo.py state",state)
+        print("ppo.py action", action)
+        # print("ppo.py advantage", advantage)
 
         for sample in range(self.mini_batchsize):
           dist, value, _, = self.model(state[sample], hidden_state[sample])

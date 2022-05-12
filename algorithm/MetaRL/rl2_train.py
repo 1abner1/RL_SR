@@ -17,20 +17,20 @@ parser = argparse.ArgumentParser(description='RL2 for MAB and MDP')
 parser.add_argument('--num_workers', type=int, default=1, help='number of workers to batch (default: 1)')
 
 parser.add_argument('--model_type', type=str, default='gru', help='the model to use (gru or snail) (default: gru)')
-parser.add_argument('--metalearn_epochs', type=int, default=300, help='number of epochs for meta learning (default: 300)')
+parser.add_argument('--metalearn_epochs', type=int, default=30, help='number of epochs for meta learning (default: 300)')
 parser.add_argument('--task', type=str, default='bandit', help='the task to learn [bandit, mdp] (default: bandit)')
 parser.add_argument('--learning_rate', type=float, default=3e-4, help='learning rate for optimizer (default: 3e-4)')
 parser.add_argument('--gamma', type=float, default=0.99, help='discount factor (default: 0.99)')
 
 parser.add_argument('--num_actions', type=int, default=5, help='number of arms for MAB or number of actions for MDP (default: 5)')
-parser.add_argument('--num_tasks', type=int, default=1000, help='number of similar tasks to run (default: 100)')
+parser.add_argument('--num_tasks', type=int, default=2, help='number of similar tasks to run (default: 100)')
 parser.add_argument('--num_traj', type=int, default=10, help='number of trajectories to interact with (default: 10)')
 parser.add_argument('--traj_len', type=int, default=1, help='fixed trajectory length (default: 1)')
 
 parser.add_argument('--tau', type=float, default=0.95, help='GAE parameter (default: 0.95)')
-parser.add_argument('--mini_batch_size', type=int, default=256, help='minibatch size for ppo update (default: 256)')
-parser.add_argument('--batch_size', type=int, default=10000, help='batch size (default: 10000)')
-parser.add_argument('--ppo_epochs', type=int, default=5, help='ppo epoch (default: 5)')
+parser.add_argument('--mini_batch_size', type=int, default=10, help='minibatch size for ppo update (default: 256)')
+parser.add_argument('--batch_size', type=int, default=1000, help='batch size (default: 10000)')
+parser.add_argument('--ppo_epochs', type=int, default=2, help='ppo epoch (default: 5)')
 parser.add_argument('--clip_param', type=float, default=0.1, help='clipping parameter for PPO (default: 0.1)')
 
 parser.add_argument('--vf_coef', type=float, default=0.5, help='value loss coefficient (default: 0.5)')
@@ -79,6 +79,9 @@ def meta_train(device, num_workers, model_type, metalearn_epochs, task, num_acti
   # meta learn need deliver parameter such as model,task,
   meta_learner = MetaLearner(device, model, num_workers, task, num_actions, num_states, num_tasks, num_traj, traj_len, gamma, tau)
   # print("111111111111111111111111111111111111")
+  print("meta_learner.sampler.actions",meta_learner.sampler.actions)
+  # print("meta_learner.task", meta_learner.task)
+  print("meta_learner.sampler.last_hidden_state", meta_learner.sampler.last_hidden_state)
   for i in range(metalearn_epochs):
     print('Meta-train epoch {}'.format(i + 1))
     meta_learner.clean_sampler()

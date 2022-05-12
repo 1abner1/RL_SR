@@ -45,7 +45,7 @@ class UnityWrapper:
         self._env = UnityEnvironment(file_name=file_name,
                                      base_port=base_port,
                                      no_graphics=no_graphics and train_mode,
-                                     seed=seed,
+                                     seed=seed
                                      )
 
         self.engine_configuration_channel.set_configuration_parameters(
@@ -169,7 +169,7 @@ class UnityWrapper:
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
-    env = UnityWrapper(train_mode=True, base_port=5004)#,file_name=r"D:\Pytorch_RL_SR\algorithm\AMRL\testtask\car_seg_avoid.exe")         # 创立环境
+    env = UnityWrapper(train_mode=True, base_port=5004,file_name=r"D:\Pytorch_RL_SR\algorithm\AMRL\testtask\car_seg_avoid.exe")         # 创立环境
     obs_shape_list, d_action_size, c_action_size = env.init()   # 环境初始化
     # print("obs_shape_list.shap",obs_shape_list.shape())
     # print("d_action",d_action_size)

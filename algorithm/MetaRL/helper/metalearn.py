@@ -25,6 +25,7 @@ class MetaLearner():
   def sample_tasks(self):
     self.tasks = self.env.unwrapped.sample_tasks(self.num_tasks)
 
+
   # Set the environment using the i'th task
   def set_env(self, i):
     assert isinstance(self.sampler, Sampler), 'sampler is not type of Sampler'
@@ -75,7 +76,7 @@ class MetaLearner():
       if curr_batchsize == agent.batchsize:
         self.sampler.concat_storage()
         # print('7777777777777777777777777777')
-        agent.update(self.sampler)
+        agent.update(self.sampler)    #upate
         #self.sampler.print_debug()
         self.sampler.reset_storage()
         curr_batchsize = 0

@@ -17,6 +17,7 @@ from algorithm.AMRL.sorft_attention.soft_attention import soft_attention_net
 from image_show.image_show import Unity_image_show
 from algorithm.AMRL.Image_deal.image_to_conv import image
 import torch.nn as nn
+from torch.utils.tensorboard import SummaryWriter  #记录log
 
 def get_args():
     parser = argparse.ArgumentParser()
@@ -144,11 +145,14 @@ def random_move():
     #     obs_list, reward, done, max_step = env.step(d_action, c_action)  # 环境step
     pass
 def main():
-    # 制作虚实结合的log 文件
-    mlog1 = mlog.run()
+    # -----------制作虚实结合的log文件--------------
+    show_SR_figure = mlog.run()
+    # -----------记录奖励函数曲线-------------------
+    reword_log = SummaryWriter('./car')
+    # -----------打印unity相关的信息---------------
     logging.basicConfig(level=logging.INFO)
-    # 获得参数信息
-    parmater = get_args()
+    # -----------获得参数信息----------------------
+    parmater = get_args()  #这个还不太会使用
     # par1 = parmater("--task")
     env = UnityWrapper(train_mode=True, base_port=5004)#,file_name=r"D:\RL_SR\envs\test\car_seg_avoid.exe")
     obs_shape_list, d_action_dim, c_action_dim = env.init()
