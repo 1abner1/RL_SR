@@ -10,3 +10,5 @@ mlagents-learn "D:\RL_SR\Unity_office\ppo_carconavoid.yaml"  --env="D:\RL_SR\env
 
 deleate office run results , data is big, can not update
 
+# 训练的数据存在台式电脑的RL_SR_DATA 中
+
