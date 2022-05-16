@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import math
 
 
-class DrawRay():
+class Ray_show():
     MAX_ANGLE = math.pi * 2/3
     per_side_length = 0
     per_angle = 0
@@ -59,27 +59,6 @@ class DrawRay():
         plt.plot(0, 0, 'b+')
         plt.pause(0.0001)
         # plt.savefig('test.png', bbox_inches='tight', pad_inches=0)
-
-
-def main():
-    unity_env = UnityEnvironment("venv_unity_windows/BuildBin/AURP.exe")
-    env = UnityToGymWrapper(unity_env, uint8_visual=True,
-                            allow_multiple_obs=True)
-    obs = env.reset()
-    drawer = None
-    while True:
-        action = env.action_space.sample()
-        obs, reward, done, info = env.step((action[0], action[1]))
-        img = obs[0]
-        ray = obs[1]
-        ray = ray[1::2]
-        if drawer == None:
-            drawer = DrawRay(len(ray))
-        drawer.show(ray)
-        if done:
-            env.reset()
-        print()
-
-
-if __name__ == '__main__':
-    main()
+#开始运行
+#ray_figure = Ray_show(len(ray))
+#ray_figure.show(ray)
