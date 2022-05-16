@@ -87,9 +87,9 @@ data_files_path = [r'D:\RL_SR\plot\AMRL_data\reward\run-carconavoid3_carconavoid
                        r'D:\RL_SR\plot\AMRL_data\reward\run-carconavoid4_carconavoid-tag-Environment_Cumulative Reward.csv',
                        r'D:\RL_SR\plot\AMRL_data\reward\run-ppo_carconavoid-tag-Environment_Cumulative Reward.csv'
                    ]
-labels = ['camera number = 1',
-          'camera number = 2',
-          'camera number = 3'
+labels = ['only camera ',
+          'only position',
+          'fusion camera ray posion'
           ]
 # colors = ['g', 'c', 'b', 'r']
 colors = ['r','g','b']
@@ -109,6 +109,6 @@ plt.ylabel("Reward")#纵坐标名字
 #plt.legend(loc="best")#图例
 plt.legend(loc="lower right")#图例
 # plt.ylim(-3.5, 0)
-plt.xlim(0, 700000)
-plt.savefig("there camera number.pdf")
+plt.xlim(0, 300000)
+plt.savefig("there sensor number.pdf")
 plt.show()

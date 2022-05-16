@@ -21,4 +21,5 @@ plt.plot(x,k8,'d-',color = '#008000',label="CNN-RLSTM")#o-:圆形
 plt.xlabel("Episode length")#横坐标名字
 plt.ylabel("Success rate")#纵坐标名字
 plt.legend(loc = "best")#图例
+plt.savefig("Target search sucess rate.pdf")
 plt.show()

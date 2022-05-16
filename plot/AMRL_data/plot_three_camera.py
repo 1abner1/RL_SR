@@ -83,13 +83,13 @@ def draw_line(data_file, label, color, max_min_mean_sm=6, smooth_sm=40):
                      facecolor=color,
                      alpha=0.3)
 plt.figure()
-data_files_path = [r'D:\experiment_data\amddpg_ddpg_a3c_reward\run-roller1_SimpleRoller-tag-Environment_Cumulative Reward.csv',
-                   r'D:\experiment_data\amddpg_ddpg_a3c_reward\run-roller2_SimpleRoller-tag-Environment_Cumulative Reward.csv',
-                   r'D:\experiment_data\amddpg_ddpg_a3c_reward\run-roller3_SimpleRoller-tag-Environment_Cumulative Reward.csv'
+data_files_path = [r'D:\RL_SR\plot\AMRL_data\reward\run-carconavoid3_carconavoid-tag-Environment_Cumulative Reward.csv',
+                       r'D:\RL_SR\plot\AMRL_data\reward\run-carconavoid4_carconavoid-tag-Environment_Cumulative Reward.csv',
+                       r'D:\RL_SR\plot\AMRL_data\reward\run-ppo_carconavoid-tag-Environment_Cumulative Reward.csv'
                    ]
-labels = ['AMDDPG',
-          'PPO',
-          'SAC'
+labels = ['camera number = 1',
+          'camera number = 2',
+          'camera number = 3'
           ]
 # colors = ['g', 'c', 'b', 'r']
 colors = ['r','g','b']
@@ -110,5 +110,5 @@ plt.ylabel("Reward")#纵坐标名字
 plt.legend(loc="lower right")#图例
 # plt.ylim(-3.5, 0)
 plt.xlim(0, 700000)
-plt.savefig("Reward.pdf")
+plt.savefig("there camera number.pdf")
 plt.show()
