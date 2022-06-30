@@ -4,6 +4,7 @@
 #pip install torch gym numpy==1.20.3
 #4.使用cuda 10.2  pip3 install torch==1.8.1+cu102 torchvision==0.9.1+cu102 torchaudio===0.8.1 -f https://download.pytorch.org/whl/torch_stable.html
 # https://github.com/Unity-Technologies/ml-agents
+#pip install opencv-python
 import numpy as np
 import metalearn as ml
 import logging
@@ -18,6 +19,7 @@ from image_show.image_show import Unity_image_show
 from algorithm.AMRL.Image_deal.image_to_conv import image
 import torch.nn as nn
 from torch.utils.tensorboard import SummaryWriter  #记录log
+from ray_show.Ray_show import Ray_show
 
 def get_args():
     parser = argparse.ArgumentParser()
@@ -97,6 +99,10 @@ def fusion_sensor_date(obs_list):
     right_image = obs_list[2][0]
     # -----------------雷达射线-----------------------
     ray = obs_list[3][0]
+    # print("ray 数据",ray)
+    # -----------------显示雷达射线--------------------
+    # ray_figure = Ray_show(len(ray))
+    # ray_figure.show(ray)
     # -----------------向量信息-----------------------
     position = obs_list[4][0]
     # -----------------显示图片-----------------------
@@ -154,7 +160,7 @@ def main():
     # -----------获得参数信息----------------------
     parmater = get_args()  #这个还不太会使用
     # par1 = parmater("--task")
-    env = UnityWrapper(train_mode=True, base_port=5004)#,file_name=r"D:\RL_SR\envs\test\car_seg_avoid.exe")
+    env = UnityWrapper(train_mode=True, base_port=5004,file_name=r"D:\RL_SR\envs\test\car_seg_avoid.exe")
     obs_shape_list, d_action_dim, c_action_dim = env.init()
     state_dim = obs_shape_list
     print("总的状态维度：",state_dim) #(前摄像头图像，左摄像头图像，右摄像头图像，射线数据，目标位置和速度)
