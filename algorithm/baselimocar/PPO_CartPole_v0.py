@@ -1,12 +1,7 @@
-import argparse
-import pickle
+
 from collections import namedtuple
 from itertools import count
-
 import os, time
-import numpy as np
-import matplotlib.pyplot as plt
-
 import gym
 import torch
 import torch.nn as nn
@@ -67,13 +62,13 @@ class PPO():
         self.buffer = []
         self.counter = 0
         self.training_step = 0
-        self.writer = SummaryWriter('../exp')
+        self.writer = SummaryWriter('./curve_log')
 
         self.actor_optimizer = optim.Adam(self.actor_net.parameters(), 1e-3)
         self.critic_net_optimizer = optim.Adam(self.critic_net.parameters(), 3e-3)
-        if not os.path.exists('../param'):
-            os.makedirs('../param/net_param')
-            os.makedirs('../param/img')
+        if not os.path.exists('./param'):
+            os.makedirs('./param/net_param')
+            os.makedirs('./param/img')
 
     def select_action(self, state):
         state = torch.from_numpy(state).float().unsqueeze(0)
@@ -102,9 +97,6 @@ class PPO():
         state = torch.tensor([t.state for t in self.buffer], dtype=torch.float)
         action = torch.tensor([t.action for t in self.buffer], dtype=torch.long).view(-1, 1)
         reward = [t.reward for t in self.buffer]
-        # update: don't need next_state
-        #reward = torch.tensor([t.reward for t in self.buffer], dtype=torch.float).view(-1, 1)
-        #next_state = torch.tensor([t.next_state for t in self.buffer], dtype=torch.float)
         old_action_log_prob = torch.tensor([t.a_log_prob for t in self.buffer], dtype=torch.float).view(-1, 1)
 
         R = 0
@@ -117,7 +109,7 @@ class PPO():
         for i in range(self.ppo_update_time):
             for index in BatchSampler(SubsetRandomSampler(range(len(self.buffer))), self.batch_size, False):
                 if self.training_step % 1000 ==0:
-                    print('I_ep {} ，train {} times'.format(i_ep,self.training_step))
+                    print('I_ep {} , train_step {} ,total_reward {}'.format(i_ep,self.training_step,round(R,2)))
                 #with torch.no_grad():
                 Gt_index = Gt[index].view(-1, 1)
                 V = self.critic_net(state[index])
@@ -149,26 +141,31 @@ class PPO():
 
         del self.buffer[:] # clear experience
 
+        return
+
     
 def main():
+    reword_log = SummaryWriter('./cartpole')
     agent = PPO()
     for i_epoch in range(1000):
         state = env.reset()
         if render: env.render()
-
         for t in count():
             action, action_prob = agent.select_action(state)
             next_state, reward, done, _ = env.step(action)
             trans = Transition(state, action, action_prob, reward, next_state)
-            if render: env.render()
+            # if render: env.render()
             agent.store_transition(trans)
             state = next_state
 
-            if done :
+            reword_log.add_scalar('reward', reward, i_epoch)
+
+            if done:
                 if len(agent.buffer) >= agent.batch_size:agent.update(i_epoch)
                 agent.writer.add_scalar('liveTime/livestep', t, global_step=i_epoch)
                 break
-
+    # reword_log.add_scalar('loss', loss2, i_episode)
+    # print("Episode : {} \t\t Timestep : {} \t\t Average Reward : {} \t\t totallos:{}".format(i_episode, time_step,print_avg_reward, loss2))
 if __name__ == '__main__':
     main()
     print("end")

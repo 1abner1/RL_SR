@@ -15,10 +15,17 @@ mlagents-learn "D:\RL_SR\Unity_office\sac_carconavoid.yaml"  --env=""D:\RL_SR\en
 
 mlagents-learn "D:\RL_SR\Unity_office\sac_carconavoid.yaml"  --env=""D:\RL_SR\envs\unknown_target_place_6_obs\car_seg_avoid.exe"" --width=1000   --height=1000  --num-envs=1 --torch-device "cuda"  --time-scale=20 --run-id sac_car_unknow_target_place3 --results-dir "D:\RL_SR_DATA\results"  --no-graphics
 
- mlagents-learn "D:\RL_SR\Unity_office\poca_carconavoid.yaml"  --env=""D:\RL_SR\envs\unknown_target_place_6_obs\car_seg_avoid.exe"" --width=1000   --height=1000  --num-envs=1 --torch-device "cuda"  --time-scale=20 --run-id poca_car_unknow_target_place --results-dir "D:\RL_SR_DATA\results"  --no-graphics
+mlagents-learn "D:\RL_SR\Unity_office\poca_carconavoid.yaml"  --env=""D:\RL_SR\envs\unknown_target_place_6_obs\car_seg_avoid.exe"" --width=1000   --height=1000  --num-envs=1 --torch-device "cuda"  --time-scale=20 --run-id poca_car_unknow_target_place --results-dir "D:\RL_SR_DATA\results"  --no-graphics
 
 mlagents-learn "D:\RL_SR\Unity_office\poca_staticavoid.yaml"  --env=""D:\RL_SR\envs\staticavoid\car_seg_avoid.exe"" --width=1000   --height=1000  --num-envs=1 --torch-device "cuda"  --time-scale=20 --run-id poca_car_static_avoid --results-dir "D:\RL_SR_DATA\results\staticavoid"  --no-graphics --num-envs 1
 
 mlagents-learn "D:\RL_SR\Unity_office\sac_dyavoid.yaml"  --env="D:\RL_SR\envs\dyavoid\car_seg_avoid.exe" --width=1000   --height=1000  --num-envs=1 --torch-device "cuda"  --time-scale=20 --run-id SAC_car_DY_avoid --results-dir "D:\RL_SR_DATA\results\dyavoid"  --no-graphics --num-envs 1
 
 mlagents-learn "D:\RL_SR\Unity_office\sac_dyavoid2.yaml"  --env="D:\RL_SR\envs\dyobsenvtest\car_seg_avoid.exe" --width=1000   --height=1000  --num-envs=1 --torch-device "cuda"  --time-scale=20 --run-id SAC_car_DY_avoid6 --results-dir "D:\RL_SR_DATA\results\dyavoid"  --no-graphics --num-envs 1
+
+
+
+mlagents-learn ""D:\RL_SR\Unity_office\ppo_staticavoid2.yaml""  --env="D:\RL_SR\envs\dyobsenvtest\car_seg_avoid.exe" --width=1000   --height=1000  --num-envs=1 --torch-device "cuda"  --time-scale=20 --run-id ppo_car_static_avoid6 --results-dir "D:\RL_SR_DATA\results\staticavoid3"  --no-graphics --num-envs 1
+
+
+mlagents-learn "D:\RL_SR\Unity_office\ppo_dynamicobsavoid.yaml"  --env="D:\RL_SR\envs\dyobsavoidv2\car_seg_avoid.exe" --width=1000   --height=1000  --num-envs=1 --torch-device "cuda"  --time-scale=20 --run-id ppo_car_static_avoid6 --results-dir "D:\RL_SR_DATA\results\dynamicobsavoid"  --no-graphics --num-envs 1
