@@ -66,9 +66,8 @@ class PPO():
 
         self.actor_optimizer = optim.Adam(self.actor_net.parameters(), 1e-3)
         self.critic_net_optimizer = optim.Adam(self.critic_net.parameters(), 3e-3)
-        if not os.path.exists('./param'):
-            os.makedirs('./param/net_param')
-            os.makedirs('./param/img')
+        if not os.path.exists('./model'):
+            os.makedirs('./model')
 
     def select_action(self, state):
         state = torch.from_numpy(state).float().unsqueeze(0)
@@ -84,14 +83,18 @@ class PPO():
             value = self.critic_net(state)
         return value.item()
 
-    def save_param(self):
-        torch.save(self.actor_net.state_dict(), '../param/net_param/actor_net' + str(time.time())[:10], +'.pkl')
-        torch.save(self.critic_net.state_dict(), '../param/net_param/critic_net' + str(time.time())[:10], +'.pkl')
+    def save_model(self,model_actor_pth,model_critc_pth):
+        torch.save(self.actor_net.state_dict(), model_actor_pth)
+        torch.save(self.critic_net.state_dict(), model_critc_pth)
+
+    def load_model(self,model_actor_pth,model_critc_pth):
+        self.actor_net.load_state_dict(torch.load(model_actor_pth,map_location=lambda storage, loc: storage))
+        self.critic_net.load_state_dict(torch.load(model_critc_pth,map_location=lambda storage, loc: storage))
+
 
     def store_transition(self, transition):
         self.buffer.append(transition)
         self.counter += 1
-
 
     def update(self, i_ep):
         state = torch.tensor([t.state for t in self.buffer], dtype=torch.float)
@@ -99,21 +102,22 @@ class PPO():
         reward = [t.reward for t in self.buffer]
         old_action_log_prob = torch.tensor([t.a_log_prob for t in self.buffer], dtype=torch.float).view(-1, 1)
 
-        R = 0
+        Reward1 = 0
         Gt = []
         for r in reward[::-1]:
-            R = r + gamma * R
-            Gt.insert(0, R)
+            Reward1 = r + gamma * Reward1
+            Gt.insert(0, Reward1)
         Gt = torch.tensor(Gt, dtype=torch.float)
         #print("The agent is updateing....")
         for i in range(self.ppo_update_time):
             for index in BatchSampler(SubsetRandomSampler(range(len(self.buffer))), self.batch_size, False):
                 if self.training_step % 1000 ==0:
-                    print('I_ep {} , train_step {} ,total_reward {}'.format(i_ep,self.training_step,round(R,2)))
+                    self.writer.add_scalar("reward",round(Reward1,2),i_ep)
+                    print('I_ep {} , train_step {} ,total_reward {}'.format(i_ep,self.training_step,round(Reward1,2)))
                 #with torch.no_grad():
                 Gt_index = Gt[index].view(-1, 1)
-                V = self.critic_net(state[index])
-                delta = Gt_index - V
+                Value = self.critic_net(state[index])
+                delta = Gt_index - Value
                 advantage = delta.detach()
                 # epoch iteration, PPO core!!!
                 action_prob = self.actor_net(state[index]).gather(1, action[index]) # new policy
@@ -131,7 +135,7 @@ class PPO():
                 self.actor_optimizer.step()
 
                 #update critic network
-                value_loss = F.mse_loss(Gt_index, V)
+                value_loss = F.mse_loss(Gt_index, Value)
                 self.writer.add_scalar('loss/value_loss', value_loss, global_step=self.training_step)
                 self.critic_net_optimizer.zero_grad()
                 value_loss.backward()
@@ -144,28 +148,53 @@ class PPO():
         return
 
     
-def main():
-    reword_log = SummaryWriter('./cartpole')
+def train():
     agent = PPO()
+    max_step = 300
+    model_actor_param_pth = './model/actor.pth'
+    model_critic_param_pth = './model/critic.pth'
+
     for i_epoch in range(1000):
         state = env.reset()
-        if render: env.render()
-        for t in count():
+        # if render: env.render()
+        for t in range(max_step):
+            # print("t",t)
             action, action_prob = agent.select_action(state)
             next_state, reward, done, _ = env.step(action)
             trans = Transition(state, action, action_prob, reward, next_state)
-            # if render: env.render()
+            if render: env.render()
             agent.store_transition(trans)
             state = next_state
 
-            reword_log.add_scalar('reward', reward, i_epoch)
-
+            # done 的条件：杆子角度太大，离开直线
             if done:
+                # print("完成了一个回合：",done,i_epoch)
                 if len(agent.buffer) >= agent.batch_size:agent.update(i_epoch)
-                agent.writer.add_scalar('liveTime/livestep', t, global_step=i_epoch)
+                agent.save_model(model_actor_param_pth,model_critic_param_pth)
                 break
-    # reword_log.add_scalar('loss', loss2, i_episode)
-    # print("Episode : {} \t\t Timestep : {} \t\t Average Reward : {} \t\t totallos:{}".format(i_episode, time_step,print_avg_reward, loss2))
+
+def test():
+    agent = PPO()
+    max_step = 300
+    model_actor_param_pth = './model/actor.pth'
+    model_critic_param_pth = './model/critic.pth'
+    agent.load_model(model_actor_param_pth,model_critic_param_pth)
+
+    for i_epoch in range(1000):
+        state = env.reset()
+        for t in range(max_step):
+            # print("t",t)
+            action, action_prob = agent.select_action(state)
+            next_state, reward, done, _ = env.step(action)
+            trans = Transition(state, action, action_prob, reward, next_state)
+            if render: env.render()
+            agent.store_transition(trans)
+            state = next_state
+            if done:
+                break
+
+
 if __name__ == '__main__':
-    main()
+    # train()
+    test()
     print("end")
