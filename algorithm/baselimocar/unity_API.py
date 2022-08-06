@@ -152,6 +152,7 @@ if __name__ == "__main__":
         # print("obs_list雷达数据222222222222222222", obs_list[1][0])
         # print("obs_list位置速度数据3333333333333333", obs_list[2][0])
         n_agents = obs_list[0].shape[0]
+        print("n_agents",n_agents)
         for step in range(100):
             d_action, c_action = None, None
             if d_action_dim:
@@ -160,7 +161,9 @@ if __name__ == "__main__":
                 d_action = np.eye(d_action_dim, dtype=np.int32)[d_action]
             if c_action_dim:
                 c_action = np.random.randn(n_agents, c_action_dim)
-
+                print("c_action:",c_action)
+            print("d_action",d_action)
             obs_list, reward, done, max_step = env.step(d_action, c_action)
+            print("执行完该步骤")
 
     env.close()
