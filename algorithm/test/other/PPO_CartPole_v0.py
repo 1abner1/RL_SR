@@ -18,7 +18,7 @@ from tensorboardX import SummaryWriter
 
 # Parameters
 gamma = 0.99
-render = False
+render = True
 seed = 1
 log_interval = 10
 

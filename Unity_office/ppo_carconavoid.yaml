@@ -20,6 +20,6 @@ behaviors:
         gamma: 0.9
         strength: 1.0
     keep_checkpoints: 5
-    max_steps: 20000000000000000000000000000000
+    max_steps: 5000000
     time_horizon: 3
     summary_freq: 1000

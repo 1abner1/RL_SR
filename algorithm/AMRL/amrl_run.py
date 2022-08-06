@@ -18,6 +18,9 @@ from algorithm.AMRL.sorft_attention.soft_attention import soft_attention_net
 from image_show.image_show import Unity_image_show
 from algorithm.AMRL.Image_deal.image_to_conv import image
 import torch.nn as nn
+from GruActorCritic.gru import GRUActorCritic
+from ppocar.PPO import PPO
+import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter  #记录log
 from ray_show.Ray_show import Ray_show
 
@@ -27,8 +30,33 @@ def get_args():
     args = parser.parse_known_args()[0]
     return args
 
+def Agent_Car():
+    num_actions = 2
+    num_feature = 8
+    ppo_epochs = 32
+    mini_batchsize = 8
+    model_Gru = GRUActorCritic(num_actions, num_feature)
+    optimizer = optim.Adam(model_Gru.parameters(), lr=0.003)
+    Car_agent = PPO(model_Gru, optimizer, ppo_epochs, mini_batchsize, batchsize, clip_param, vf_coef, ent_coef, max_grad_norm, target_kl)
+
+
 def ada_meta_rl():
-    meta_learn = ml.MetaLearner()
+    # instance_meta_learn =meta_learn()
+    # device, model, num_workers, task, num_actions, num_states, num_tasks, num_traj, traj_len, gamma, tau
+    # 元学习器，主要引入了
+    num_workers = 1
+    task = "Car_Object_Search" # "Car_Object_Search",Car_Static_Search , Car_Dynamic_avoid , 三种任务
+    num_actions = 2  #(direcation,accleration)
+    num_states = 8  #(同质感知数据，异质感知数据，位置信息统一处理成8维)
+    num_tasks = 30  # (总任务数)
+    num_traj = 1
+    traj_len = 1
+    gamma = 0.99
+    tau = 0.95   #'GAE parameter
+    num_feature = num_actions + num_states
+    model_Gru = GRUActorCritic(num_actions, num_feature)
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    meta_learn = ml.MetaLearner(device,model_Gru,num_workers,num_actions,num_states,num_tasks,num_traj,traj_len,gamma,tau)
 
 def outloop_select_task():
     task_pool = {"task1": "D:/Pytorch_RL_SR/algorithm\AMRL/task1/car_seg_avoid.exe",
@@ -150,6 +178,8 @@ def random_move():
     #         c_action = np.random.randn(n_agents, c_action_size)
     #     obs_list, reward, done, max_step = env.step(d_action, c_action)  # 环境step
     pass
+
+
 def main():
     # -----------制作虚实结合的log文件--------------
     show_SR_figure = mlog.run()
