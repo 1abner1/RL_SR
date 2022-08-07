@@ -6,7 +6,7 @@ import seaborn as sns
 sns.set(style="darkgrid") #这是seaborn默认的风格
 #数据处理方法
 #1、数据的smooth方法
-def smooth(data, sm=10):
+def smooth(data, sm=5):
     '''
     :param data:
     :param sm: sm表示滑动窗口大小,为2*k+1,
@@ -20,7 +20,7 @@ def smooth(data, sm=10):
             smooth_data.append(d)
     return smooth_data
 
-def smoothing(data, sm=20):
+def smoothing(data, sm=5):
     '''
     :param data:
     :param sm: sm表示滑动窗口大小,
@@ -82,33 +82,44 @@ def draw_line(data_file, label, color, max_min_mean_sm=6, smooth_sm=40):
                      data_max_smooth_y,
                      facecolor=color,
                      alpha=0.3)
-plt.figure()
-data_files_path = [r'D:\RL_SR\plot\AMRL_data\reward\run-car_unknow_target_place3_carconavoid-tag-Environment_Cumulative Reward.csv',
-                       r'D:\RL_SR\plot\AMRL_data\reward\run-carconavoid1_carconavoid-tag-Environment_Cumulative Reward.csv',
-                       r'D:\RL_SR\plot\AMRL_data\reward\run-car_unknow_target_place5_carconavoid-tag-Environment_Cumulative Reward.csv'
-                   ]
-labels = ['AMRL',
-          'AMRL_NO_ICM',
-          'AMRL_NO_PEP'
-          ]
-# colors = ['g', 'c', 'b', 'r']
-colors = ['r','g','b']
-# smooth_sms = [80, 80, 80, 80]
-smooth_sms = [10,10,10]
 
-for data_file_path, label, color, smooth_sm in zip(data_files_path, labels, colors, smooth_sms):
-    draw_line(data_file=data_file_path,
-              label=label,
-              color=color,
-              max_min_mean_sm=20,
-              smooth_sm=smooth_sm)
 
-#figure的具体设置需要在直线等画完了在进行
-plt.xlabel("Step")#横坐标名字
-plt.ylabel("Reward")#纵坐标名字
-#plt.legend(loc="best")#图例
-plt.legend(loc="lower right")#图例
-# plt.ylim(-3.5, 0)
-plt.xlim(0, 300000)
-plt.savefig("adapt albation1.pdf")
-plt.show()
+
+def curve_plot():
+    plt.figure()
+
+    data_files_path = [
+                       r'D:\RL_SR\plot\AMRL_data\reward\run-carconavoid3_carconavoid-tag-Environment_Cumulative Reward.csv',
+                       r'D:\RL_SR\plot\AMRL_data\reward\run-carconavoid4_carconavoid-tag-Environment_Cumulative Reward.csv',
+                       r'D:\RL_SR\plot\AMRL_data\reward\run-ppo_carconavoid-tag-Environment_Cumulative Reward.csv'
+                       ]
+
+    labels = [
+              'AMRL_PEP',
+              'AMRL_ICM',
+              'AMR'
+              ]
+
+    colors = ['r','g','m']
+
+    smooth_sms = [2,2,2]
+
+    for data_file_path, label, color, smooth_sm in zip(data_files_path, labels, colors, smooth_sms):
+        draw_line(data_file=data_file_path,
+                  label=label,
+                  color=color,
+                  max_min_mean_sm=20,
+                  smooth_sm=smooth_sm)
+
+    #figure的具体设置需要在直线等画完了在进行
+    plt.xlabel("Step")#横坐标名字
+    plt.ylabel("Reward")#纵坐标名字
+    #plt.legend(loc="best")#图例
+    plt.legend(loc="lower right")#图例
+    # plt.ylim(-3.5, 0)
+    plt.xlim(0, 300000)
+    plt.savefig("real target Reward.pdf")
+    plt.show()
+
+
+curve_plot()
