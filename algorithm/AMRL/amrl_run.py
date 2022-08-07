@@ -199,6 +199,24 @@ class Actor_crtic_network(nn.Module):
             print("setting actor output action_std to : ", self.action_std)
         self.set_action_std(self.action_std)
 
+class Attention(nn.Module):#自定义类 继承nn.Module
+
+    def __init__(self):#初始化函数
+        super(Attention, self).__init__()#继承父类初始化函数
+
+        self.model = nn.Sequential(
+            nn.Linear(8, 64),
+            nn.ReLU(inplace=True),
+            nn.Linear(64, 64),
+            nn.ReLU(inplace=True),
+            nn.Linear(64, 1),
+            nn.ReLU(inplace=True),
+        )#自定义实例属性 model 传入自定义模型的内部构造 返回类
+
+    def forward(self, x):
+        x = self.model(x)
+
+
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--task', type=str, default='Pendulum-v0')
@@ -219,7 +237,6 @@ def Agent_Car():
     model_Gru = GRUActorCritic(num_actions, num_feature)
     optimizer = optim.Adam(model_Gru.parameters(), lr=0.003)
     Car_agent = PPO(model_Gru, optimizer, ppo_epochs, mini_batchsize, batchsize, clip_param, vf_coef, ent_coef, max_grad_norm, target_kl)
-
 
 def ada_meta_rl():
     # instance_meta_learn =meta_learn()
@@ -377,25 +394,6 @@ def env_rest_image_conv(env_reset_state_image):
 
     return  state_image1
 
-
-class Attention(nn.Module):#自定义类 继承nn.Module
-
-    def __init__(self):#初始化函数
-        super(Attention, self).__init__()#继承父类初始化函数
-
-        self.model = nn.Sequential(
-            nn.Linear(8, 64),
-            nn.ReLU(inplace=True),
-            nn.Linear(64, 64),
-            nn.ReLU(inplace=True),
-            nn.Linear(64, 1),
-            nn.ReLU(inplace=True),
-        )#自定义实例属性 model 传入自定义模型的内部构造 返回类
-
-    def forward(self, x):
-        x = self.model(x)
-
-
 def ray_trans(state_ray):
     lay = nn.Linear(202, 8)
     # state_ray = state_ray.detach()
@@ -403,7 +401,6 @@ def ray_trans(state_ray):
     state_ray1 = lay(state_ray_tensor)
     state_ray1 = state_ray1.detach()
     return state_ray1
-
 
 def date_jonint(data1,data2):
     data1_list = data1.numpy().tolist()[0]
@@ -433,14 +430,12 @@ def fusion_total_all_sensor(state):
 
     return fusion_total_state
 
-
 def save_final_episode(episdode1):
     os.makedirs(os.path.join('.', 'episode_step'), exist_ok=True)
     episode_step = os.path.join('.', 'episode_step', 'episode.txt')
     with open(episode_step, 'w', encoding='utf-8') as f:
         f.write(str(episdode1))  # 列名
     return episdode1
-
 
 def main():
     #-------------------参数--------------------
@@ -552,7 +547,6 @@ def main():
             is_weights1 = array_tensor(is_weights1)
             # ------------添加经验优先回放-------------
 
-
 def train():
     # -------------------参数--------------------
     action_dim = 2
@@ -565,22 +559,13 @@ def train():
     lr_critic = 0.005  # learning rate for critic network
     random_seed = 0
     max_ep_len = 100
-    log_freq = max_ep_len * 2
-    print_freq = max_ep_len * 1
-    update_timestep = max_ep_len * 4
-    save_model_freq = int(1e3)
     action_std = 0.6  # starting std for action distribution (Multivariate Normal)
     action_std_decay_rate = 0.05  # linearly decay action_std (action_std = action_std - action_std_decay_rate)
     min_action_std = 0.1  # minimum action_std (stop decay after action_std <= min_action_std)
-    action_std_decay_freq = int(2.5e4)
-    max_training_timesteps = int(3e8)
-    # printing and logging variables
     print_running_reward = 0
     print_running_episodes = 1
     run_num_pretrained = 0
     current_ep_reward = 0
-    load_model = False
-    image_conv = True
     directory = "PPO_model"
     if not os.path.exists(directory):
         os.makedirs(directory)
@@ -652,7 +637,6 @@ def train():
 
             save_step_episode = save_final_episode(episode)
     env.close()
-
 
 
 if __name__ == "__main__":

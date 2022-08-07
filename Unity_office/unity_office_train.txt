@@ -33,3 +33,5 @@ mlagents-learn "D:\RL_SR\Unity_office\ppo_dynamicobsavoid.yaml"  --env="D:\RL_SR
 mlagents-learn "D:\RL_SR\Unity_office\poca_limocar.yaml"  --env="D:\RL_SR\algorithm\baselimocar\unityenv\AURP.exe" --width=1000   --height=1000  --num-envs=1 --torch-device "cuda"  --time-scale=20 --run-id poca_limocar --results-dir "D:\RL_SR_DATA\results\limocar"
 
 mlagents-learn "D:\RL_SR\Unity_office\poca_limocar.yaml"  --width=1000   --height=1000  --num-envs=1 --torch-device "cuda"  --time-scale=20 --run-id poca_limocar --results-dir "D:\RL_SR_DATA\results\limocar"
+
+mlagents-learn "D:\RL_SR\Unity_office\ppo_dynamicobsavoid.yaml"  --env="D:\RL_SR\envs\dyobsovid3\car_seg_avoid.exe" --width=1000   --height=1000  --num-envs=1 --torch-device "cuda"  --time-scale=20 --run-id ppo_car_dyobs1 --results-dir "D:\RL_SR_DATA\results\dynamicobsavoid2"  --no-graphics
