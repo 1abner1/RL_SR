@@ -255,9 +255,6 @@ class PPO_Algorithm():
         self.set_action_std(self.action_std)
 
 
-
-
-
 class CNNNet(nn.Module):
     # 150X150
     # (width-kernel_size + 2padding)/sride +1
