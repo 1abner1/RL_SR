@@ -10,7 +10,7 @@ import numpy as np
 from datetime import datetime
 import torchvision.transforms as transforms
 import logging
-from ros_car import RosCar
+
 
 transformer = transforms.Compose([transforms.Resize((84, 84)),    #resize 调整图片大小
                                   # transforms.RandomHorizontalFlip(), # 水平反转
@@ -531,7 +531,8 @@ def test():
 
     env.close()
 
-def limocar_test():
+def reaL_limocar_test():
+    from ros_car import RosCar
     env_name = 'Unitylimocar'
     reword_log = SummaryWriter('./limocar')
     K_epochs = 100  # update policy for K epochs in one PPO update
@@ -617,5 +618,5 @@ def limocar_test():
 if __name__ == '__main__':
     # train()
     test()
-    # limocar_test()
+    # reaL_limocar_test()limocar_test()
     print("end")
