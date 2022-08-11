@@ -66,7 +66,7 @@ def env_step_image_conv(state_image11):
     return env_step_state_image
 
 def ray_trans(state_ray):
-    lay = nn.Linear(202, 8)
+    lay = nn.Linear(202, 64)
     # state_ray = state_ray.detach()
     state_ray_tensor = torch.from_numpy(state_ray)
     state_ray1 = lay(state_ray_tensor)
@@ -231,7 +231,6 @@ class PPO_Algorithm():
 
         return loss1, loss2
 
-
     def save_network_parm(self, checkpoint_path):
         torch.save(self.policy_value_old.state_dict(), checkpoint_path)
 
@@ -256,9 +255,6 @@ class PPO_Algorithm():
 
 
 class CNNNet(nn.Module):
-    # 150X150
-    # (width-kernel_size + 2padding)/sride +1
-    # (150-3+2*1)/1 +1
     def __init__(self):
         super(CNNNet, self).__init__()
         # 定义第一个卷积层 84 *84 *3,out_channels=16 # 通道数越大，计算时间越长
@@ -278,8 +274,7 @@ class CNNNet(nn.Module):
         # 定义第一个全连接层
         self.fc1 = nn.Linear(3*84*84, 512)  #4096
         # 定义第二个全连接层
-        self.fc2 = nn.Linear(512, 8)    #4096
-
+        self.fc2 = nn.Linear(512, 64)    #4096
 
     def forward(self, x):
         e1 = self.conv1(x)
@@ -293,13 +288,13 @@ class CNNNet(nn.Module):
 def train():
     env_name = 'Unitylimocar'
     reword_log = SummaryWriter('./limocar')
-    K_epochs = 100  # update policy for K epochs in one PPO update
+    K_epochs = 1000  # update policy for K epochs in one PPO update
     eps_clip = 0.2  # clip parameter for PPO
     gamma = 0.9  # discount factor
     lr_actor = 0.0003  # learning rate for actor network
     lr_critic = 0.005  # learning rate for critic network
     random_seed = 0
-    max_ep_len = 100
+    max_ep_len = 1000
     log_freq = max_ep_len * 2
     print_freq = max_ep_len * 1
     update_timestep = max_ep_len * 4
@@ -340,12 +335,8 @@ def train():
         env.seed(random_seed)
         np.random.seed(random_seed)
 
-    # True表示需要卷积,False
-    if (image_conv):
-        state_dim = 16  # 这一步非常重要
-    else:
-        # 仅有位置信息
-        state_dim = 8
+    state_dim = 128  # 这一步非常重要
+
     # 确定智能体
     ppo_agent = PPO_Algorithm(state_dim, action_dim, lr_actor, lr_critic, gamma, K_epochs, eps_clip,action_std)
 
@@ -373,13 +364,16 @@ def train():
         # ----------图像和雷达数据合并-------
         state = image_add_ray_total_state(state_image1,state_ray1)
 
+        current_ep_reward = 0
         for t in range(1, max_ep_len + 1):
             # select action with policy #env.reset 产生的state 需要卷积处理
             action = ppo_agent.selection_action(state)
             action = np.expand_dims(action, 0)
             state, reward, done, _ = env.step(None, action)
+            # print("reward",reward)
             state_image11 = state[0][0]  # 一张图像被处理成8个数字
             state_ray11 = state[1][0]  # 404个数据
+            # print("reward",reward)
             # 这是处理env.stp 获得图像数据
             # ----------------处理图像--------------------------------
             env_step_state_image = env_step_image_conv(state_image11)
@@ -390,31 +384,29 @@ def train():
 
             reward = float(reward[0])
             done = bool(done[0])
+            # print("reward111111111111111",reward)
 
             # saving reward and is_terminals
             ppo_agent.buffer.rewards.append(reward)
             ppo_agent.buffer.is_terminals.append(done)
-
+            # print("reward2222222222222222222", reward)
             time_step += 1
             current_ep_reward += reward
+            # mean_reward = current_ep_reward/max_ep_len
+            # mean_reward = round(mean_reward,4)
+
+
             loss2 = torch.tensor(0)
             # update PPO agent
             if time_step % update_timestep == 0:
                 loss = ppo_agent.network_update()
                 loss2 = loss
+                print("loss",loss2)
+                # reword_log.add_scalar('loss', loss2, time_step)
 
             if time_step % action_std_decay_freq == 0:
                 ppo_agent.decay_action_std(action_std_decay_rate, min_action_std)
 
-            # printing average reward
-            if time_step % print_freq == 0:
-                print_avg_reward = print_running_reward / print_running_episodes
-                print_avg_reward = round(print_avg_reward, 4) * 100  # 取两位有效数字
-                reword_log.add_scalar('rewardwithepisode', print_avg_reward, i_episode)
-                # reword_log.add_scalar('loss', loss2, i_episode)
-                print("Episode : {} \t\t Timestep : {} \t\t Average Reward : {}".format(i_episode, time_step,print_avg_reward))
-                print_running_reward = 0
-                print_running_episodes = 0
                 # save model weights
             if time_step % save_model_freq == 0:
                 print("saving model at : " + checkpoint_path)
@@ -424,9 +416,10 @@ def train():
                 break
             print_running_reward += current_ep_reward / 1000
             print_running_episodes += 1
-
-            i_episode += 1
-            save_step_episode = save_final_episode(i_episode)
+        print("Episode:{} Average Reward:{}".format(i_episode, current_ep_reward))
+        reword_log.add_scalar('rewardwithepisode', current_ep_reward, time_step)
+        i_episode += 1
+        save_step_episode = save_final_episode(i_episode)
             # print("执行到第",save_step_episode)
     env.close()
     end_time = datetime.now().replace(microsecond=0)
@@ -470,12 +463,9 @@ def test():
         env.seed(random_seed)
         np.random.seed(random_seed)
 
-    # True表示需要卷积,False
-    if (image_conv):
-        state_dim = 16  # 这一步非常重要
-    else:
-        # 仅有位置信息
-        state_dim = 8
+
+    state_dim = 128  # 这一步非常重要
+
     # 确定智能体
     ppo_agent = PPO_Algorithm(state_dim, action_dim, lr_actor, lr_critic, gamma, K_epochs, eps_clip, action_std)
 
@@ -510,6 +500,7 @@ def test():
             action = ppo_agent.selection_action(state)
             action = np.expand_dims(action, 0)
             state, reward, done, _ = env.step(None, action)
+            print("reward",reward)
             state_image11 = state[0][0]  # 一张图像被处理成8个数字
             state_ray11 = state[1][0]  # 404个数据
             # 这是处理env.stp 获得图像数据
@@ -527,7 +518,8 @@ def test():
             ppo_agent.buffer.clear()
             time_step += 1
             current_ep_reward += reward
-        print("Episode:{}\t Average Reward:{}".format(ep, current_ep_reward))
+            Accumulated_reward = current_ep_reward/max_ep_len
+        print("Episode:{}\t Average Reward:{}".format(ep, Accumulated_reward))
 
     env.close()
 
@@ -549,14 +541,10 @@ def reaL_limocar_test():
     image_conv = True
     directory = "PPO_model"
     total_test_episodes = 1000
-
     c_action_dim = 2
     limocar = RosCar()
 
-
-
     checkpoint_path = r"./mode/PPO_Unitylimocar_0_0.pth"
-
 
     # True表示需要卷积,False
     if (image_conv):
@@ -616,7 +604,7 @@ def reaL_limocar_test():
 
 
 if __name__ == '__main__':
-    # train()
-    test()
+    train()
+    # test()
     # reaL_limocar_test()limocar_test()
     print("end")
