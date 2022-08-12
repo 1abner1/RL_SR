@@ -389,12 +389,8 @@ def train():
             # saving reward and is_terminals
             ppo_agent.buffer.rewards.append(reward)
             ppo_agent.buffer.is_terminals.append(done)
-            # print("reward2222222222222222222", reward)
             time_step += 1
             current_ep_reward += reward
-            # mean_reward = current_ep_reward/max_ep_len
-            # mean_reward = round(mean_reward,4)
-
 
             loss2 = torch.tensor(0)
             # update PPO agent
@@ -417,10 +413,10 @@ def train():
             print_running_reward += current_ep_reward / 1000
             print_running_episodes += 1
         print("Episode:{} Average Reward:{}".format(i_episode, current_ep_reward))
-        reword_log.add_scalar('rewardwithepisode', current_ep_reward, time_step)
+        reword_log.add_scalar('rewardwithepisode', i_episode, current_ep_reward)
         i_episode += 1
         save_step_episode = save_final_episode(i_episode)
-            # print("执行到第",save_step_episode)
+        # print("执行到第",save_step_episode)
     env.close()
     end_time = datetime.now().replace(microsecond=0)
     print("Total training time : ", end_time - start_time)
@@ -463,7 +459,6 @@ def test():
         env.seed(random_seed)
         np.random.seed(random_seed)
 
-
     state_dim = 128  # 这一步非常重要
 
     # 确定智能体
@@ -480,7 +475,7 @@ def test():
 
     start_time = datetime.now().replace(microsecond=0)
     time_step = 0
-
+    current_ep_reward = 0
     # while time_step <= max_training_timesteps:
     for ep in range(1, total_test_episodes + 1):
         ep_reward = 0
@@ -518,8 +513,7 @@ def test():
             ppo_agent.buffer.clear()
             time_step += 1
             current_ep_reward += reward
-            Accumulated_reward = current_ep_reward/max_ep_len
-        print("Episode:{}\t Average Reward:{}".format(ep, Accumulated_reward))
+        print("Episode:{}\t Average Reward:{}".format(ep, current_ep_reward))
 
     env.close()
 
