@@ -4,10 +4,10 @@ import gym
 import numpy as np
 import itertools
 import torch
-from Algorithm.SACIR import SACIR
+from SACIR import SACIR, ReplayMemoryIR
 from tensorboardX import SummaryWriter
-from Memory.ReplayMemoryIR import ReplayMemoryIR
-from Envwrapper.UnityEnv import UnityWrapper
+from UnityEnv import UnityWrapper
+
 
 parser = argparse.ArgumentParser(description="PyTorch Soft Actor-Critic Args")
 parser.add_argument(

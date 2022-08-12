@@ -3,12 +3,13 @@ import os
 from time import sleep
 import gym
 import glob
-from Algorithm.SAC import SAC
+from SACIR import SACIR
+from UnityEnv import UnityWrapper
 
 parser = argparse.ArgumentParser(description="PyTorch Soft Actor-Critic Args")
 parser.add_argument(
     "--env-name",
-    default="LunarLander-v2",
+    default="venv_605",
     help="Mujoco Gym environment (default: LunarLander-v2)",
 )
 parser.add_argument(
@@ -114,21 +115,29 @@ parser.add_argument("--cuda", action="store_true", help="run on CUDA (default: F
 args = parser.parse_args()
 
 
-env = gym.make(args.env_name, continuous=(args.policy == "Gaussian"))
-agent = SAC(env.observation_space.shape[0], env.action_space, args)
+# env = UnityWrapper(args.env_name, worker_id=1, seed=args.seed)
+env = UnityWrapper(None, worker_id=0)
+env.reset(seed=args.seed)
+env.action_space.seed(args.seed)
+
+agent = SACIR(env.observation_space, env.action_space, args)
 list_of_files = glob.glob("result/{}/checkpoints/*".format(args.env_name))
-latest_file = max(list_of_files, key=os.path.getctime)
+# latest_file = max(list_of_files, key=os.path.getctime)
+latest_file = "result/{}/checkpoints/19.64.ckpt".format(args.env_name)
+
 print("Test on : ", latest_file)
 agent.load_checkpoint(latest_file)
-done = False
-obs = env.reset(seed=args.seed)
-total_reward = 0
-step = 0
-while not done:
-    action = agent.select_action(obs)
-    obs, reward, done, _ = env.step(action)
-    env.render()
-    sleep(0.01)
-    total_reward += reward
-    step += 1
-print("Reward: ", total_reward, " Step: ", step)
+
+while True:
+    done = False
+    obs = env.reset(seed=args.seed)
+    total_reward = 0
+    step = 0
+    while not done:
+        action = agent.select_action(obs, evaluate=True)
+        obs, reward, done, _ = env.step(action)
+        env.render()
+        sleep(0.01)
+        total_reward += reward
+        step += 1
+    print("Reward: ", total_reward, " Step: ", step)
