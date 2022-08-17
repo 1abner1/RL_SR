@@ -18,7 +18,7 @@ transformer = transforms.Compose([transforms.Resize((84, 84)),    #resize 调整
                                   # transforms.Normalize([0.5,0.5,0.5],[0.5,0.5,0.5])  #归一化
                                   ])
 
-device = torch.device('cpu')
+device = torch.device('cuda:0') #'cuda:0'
 
 def load_final_episode():
     with open(".tem/episode.txt", 'r') as f:
@@ -39,8 +39,12 @@ def env_rest_image_conv(env_reset_state_image):
     changge_obs_state = obs_tensor_input.view(1, 3, 84, 84)
     state = changge_obs_state
     net = CNNNet()
+    net = net.to(device)
+    # print("卷积状态net111111111111111111111",state)
+    state = state.to(device)
     OUTPUT_obs = net.forward(state)
     out_obs_array = OUTPUT_obs[0]
+    out_obs_array = out_obs_array.cpu()
     out_obs_array = out_obs_array.detach().numpy()
     input_obs_state = torch.from_numpy(out_obs_array)
     state = input_obs_state.unsqueeze(dim=0)
@@ -69,8 +73,13 @@ def ray_trans(state_ray):
     lay = nn.Linear(202, 64)
     # state_ray = state_ray.detach()
     state_ray_tensor = torch.from_numpy(state_ray)
+    lay = lay.to(device)
+    # print("state_ray_tensor类型",type(state_ray_tensor))
+    state_ray_tensor = state_ray_tensor.to(device)
     state_ray1 = lay(state_ray_tensor)
     state_ray1 = state_ray1.detach()
+    # print("state_ray1类型",type(state_ray1))
+    state_ray1 = state_ray1.cpu()
     return state_ray1
 
 def image_add_ray_total_state(state_image1,state_ray1):
@@ -104,28 +113,30 @@ class Actor_crtic_network(nn.Module):
         self.action_dim = action_dim
         self.action_std_init = 0.6
         self.action_var = torch.full((action_dim,), self.action_std_init * self.action_std_init).to(device)
-
+        # state_dim = torch.tensor(state_dim).to(device)
+        # action_dim = torch.tensor(action_dim).to(device)
         self.actor = nn.Sequential(
-            nn.Linear(state_dim, 64),
+            nn.Linear(state_dim, 128),
             nn.Tanh(),
-            nn.Linear(64, 64),
+            nn.Linear(128, 128),
             nn.Tanh(),
-            nn.Linear(64, action_dim),
+            nn.Linear(128, action_dim),
             nn.Tanh()
         )
         self.critic = nn.Sequential(
-            nn.Linear(state_dim, 64),
+            nn.Linear(state_dim, 128),
             nn.Tanh(),
-            nn.Linear(64, 64),
+            nn.Linear(128, 128),
             nn.Tanh(),
-            nn.Linear(64, 1)
+            nn.Linear(128, 1)
         )
 
     def forward(self):
         raise NotImplementedError
 
     def Actor_policy(self, state):
-        action_mean = self.actor(state)
+        self.actor = self.actor.to(device)  #模型也需要放在gpu中
+        action_mean = self.actor(state)  # 这一部有问题
         cov_mat = torch.diag(self.action_var).unsqueeze(dim=0)
         dist = MultivariateNormal(action_mean, cov_mat)
         action = dist.sample()  # 动作采用多元高斯分布采样
@@ -139,6 +150,7 @@ class Actor_crtic_network(nn.Module):
         dist = MultivariateNormal(action_mean, cov_mat)
         action_logprobs = dist.log_prob(action)  # 取动作的概率
         dist_entropy = dist.entropy()  # 多元高斯分布的熵是什么，熵是两个分布的比值，熵是否理解为期望，所有值的概率*值，信息熵是一个值
+        self.critic = self.critic.to(device)  # 更新critic 网络到gpu 中
         state_values = self.critic(state)  # 将状态输入到critic 中得到的是状态值
         return action_logprobs, state_values, dist_entropy
 
@@ -177,7 +189,8 @@ class PPO_Algorithm():
     def selection_action(self,state):
         with torch.no_grad():
             state = torch.FloatTensor(state).to(device)
-            action, action_logprob = self.policy_value.Actor_policy(state)   #关键点
+            # print("state55555555555555类型",type(state))  # 这个state 是在gpu 内存中
+            action, action_logprob = self.policy_value.Actor_policy(state) #关键点
         self.buffer.states.append(state)
         self.buffer.actions.append(action)
         self.buffer.logprobs.append(action_logprob)
@@ -217,19 +230,24 @@ class PPO_Algorithm():
             surr2 = torch.clamp(ratios, 1 - self.eps_clip, 1 + self.eps_clip) * advantages
             # 这个更新方式为clip 的ppo 而不是pential 的ppo (使用kl散度)，目标是让获得评估值和奖励函数进行对比，state_value是通过critic输出的，actor获得动作
             loss2 = abs(state_values - rewards).detach()
+            self.MseLoss = self.MseLoss.to(device)
             loss = -torch.min(surr1, surr2) + 0.5 * self.MseLoss(state_values,rewards) - 0.01 * dist_entropy  # dist_entropy 为多元高斯分布的信息熵(传入动作的信息熵) 最后一项表示的增加探索项。
             self.loss = loss
             # take gradient step
             self.optimizer.zero_grad()
             loss.mean().backward()
+            # loss2.mean().backward()
             self.optimizer.step()
             loss1 = loss.mean()
+            # loss2 = loss2.mean()
         # Copy new weights into old policy
         self.policy_value_old.load_state_dict(self.policy_value.state_dict())
         # clear buffer
         self.buffer.clear()
+        print("loss16666666666666666666",loss1)
+        # print("loss26666666666666666666", loss2)
 
-        return loss1, loss2
+        return loss1
 
     def save_network_parm(self, checkpoint_path):
         torch.save(self.policy_value_old.state_dict(), checkpoint_path)
@@ -287,10 +305,10 @@ class CNNNet(nn.Module):
 
 def train():
     env_name = 'Unitylimocar'
-    reword_log = SummaryWriter('./limocar')
-    K_epochs = 1000  # update policy for K epochs in one PPO update
-    eps_clip = 0.2  # clip parameter for PPO
-    gamma = 0.9  # discount factor
+    reword_log = SummaryWriter('./limocar/train_log_18')
+    K_epochs = 2000  # update policy for K epochs in one PPO update
+    eps_clip = 0.3  # clip parameter for PPO
+    gamma = 0.98  # discount factor
     lr_actor = 0.0003  # learning rate for actor network
     lr_critic = 0.005  # learning rate for critic network
     random_seed = 0
@@ -314,7 +332,7 @@ def train():
     directory = "PPO_model"
 
     logging.basicConfig(level=logging.INFO)
-    env = UnityWrapper(train_mode=True, base_port=5004)#,file_name=r"D:\RL_SR\envs\baselimocar\AURP.exe")
+    env = UnityWrapper(train_mode=True, base_port=5005,file_name=r"D:\RL_SR\envs\limocar\AURP.exe")
     obs_shape_list, d_action_dim, c_action_dim = env.init()
     # 状态维度
     state_dim = obs_shape_list[0][0]
@@ -327,7 +345,7 @@ def train():
     directory = directory + '/' + env_name + '/'
     if not os.path.exists(directory):
         os.makedirs(directory)
-    checkpoint_path = directory + "PPO_{}_{}_{}.pth".format(env_name, random_seed, run_num_pretrained)
+    checkpoint_path = directory + "PPO18_{}_{}_{}.pth".format(env_name, random_seed, run_num_pretrained)
     print("save checkpoint path : " + checkpoint_path)
     if random_seed:
         print("setting random seed to ", random_seed)
@@ -354,7 +372,8 @@ def train():
 
     while time_step <= max_training_timesteps:
         state = env.reset()
-        state_image = state[0][0]   #一张图像被处理成8个数字
+        # print("statereset类型",type(state))
+        state_image = state[0][0]#一张图像被处理成8个数字
         state_ray = state[1][0]     #404个数据
         #  处理成env.reset 的图像数据
         #--------图像处理-----
@@ -367,7 +386,11 @@ def train():
         current_ep_reward = 0
         for t in range(1, max_ep_len + 1):
             # select action with policy #env.reset 产生的state 需要卷积处理
-            action = ppo_agent.selection_action(state)
+            # print("state类型",type(state))
+            # state = torch.tensor(state)
+            # state = state.to(device)
+            # print("state1类型", type(state))
+            action = ppo_agent.selection_action(state)  # 状态传入到了gpu
             action = np.expand_dims(action, 0)
             state, reward, done, _ = env.step(None, action)
             # print("reward",reward)
@@ -382,6 +405,7 @@ def train():
             # ----------图像和雷达数据合并-------
             state = image_add_ray_total_state(env_step_state_image, ray_step_state)
 
+            # print("合并数据类型",type(state))
             reward = float(reward[0])
             done = bool(done[0])
             # print("reward111111111111111",reward)
@@ -389,20 +413,17 @@ def train():
             # saving reward and is_terminals
             ppo_agent.buffer.rewards.append(reward)
             ppo_agent.buffer.is_terminals.append(done)
-            # print("reward2222222222222222222", reward)
             time_step += 1
             current_ep_reward += reward
-            # mean_reward = current_ep_reward/max_ep_len
-            # mean_reward = round(mean_reward,4)
-
 
             loss2 = torch.tensor(0)
             # update PPO agent
+            # print("time_step",time_step)
             if time_step % update_timestep == 0:
                 loss = ppo_agent.network_update()
-                loss2 = loss
-                print("loss",loss2)
-                # reword_log.add_scalar('loss', loss2, time_step)
+                # loss2 = torch.tensor(loss)
+                print("更新参数loss",loss)
+                reword_log.add_scalar('loss', loss, i_episode)
 
             if time_step % action_std_decay_freq == 0:
                 ppo_agent.decay_action_std(action_std_decay_rate, min_action_std)
@@ -417,10 +438,10 @@ def train():
             print_running_reward += current_ep_reward / 1000
             print_running_episodes += 1
         print("Episode:{} Average Reward:{}".format(i_episode, current_ep_reward))
-        reword_log.add_scalar('rewardwithepisode', current_ep_reward, time_step)
+        reword_log.add_scalar('reward_episode',current_ep_reward,i_episode)
         i_episode += 1
         save_step_episode = save_final_episode(i_episode)
-            # print("执行到第",save_step_episode)
+        # print("执行到第",save_step_episode)
     env.close()
     end_time = datetime.now().replace(microsecond=0)
     print("Total training time : ", end_time - start_time)
@@ -463,7 +484,6 @@ def test():
         env.seed(random_seed)
         np.random.seed(random_seed)
 
-
     state_dim = 128  # 这一步非常重要
 
     # 确定智能体
@@ -480,7 +500,7 @@ def test():
 
     start_time = datetime.now().replace(microsecond=0)
     time_step = 0
-
+    current_ep_reward = 0
     # while time_step <= max_training_timesteps:
     for ep in range(1, total_test_episodes + 1):
         ep_reward = 0
@@ -518,8 +538,7 @@ def test():
             ppo_agent.buffer.clear()
             time_step += 1
             current_ep_reward += reward
-            Accumulated_reward = current_ep_reward/max_ep_len
-        print("Episode:{}\t Average Reward:{}".format(ep, Accumulated_reward))
+        print("Episode:{}\t Average Reward:{}".format(ep, current_ep_reward))
 
     env.close()
 

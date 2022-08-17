@@ -35,10 +35,11 @@ class UnityWrapper:
                                      seed=seed)
 
         if train_mode:
-            self.engine_configuration_channel.set_configuration_parameters(width=2,
-                                                                           height=2,
-                                                                           quality_level=0,
-                                                                           time_scale=0.01)
+            self.engine_configuration_channel.set_configuration_parameters(width=480,
+                                                                           height=480,
+                                                                           quality_level=2,
+                                                                          time_scale=20)
+            print("设置宽度运行了11111111111111111111")
         else:
             self.engine_configuration_channel.set_configuration_parameters(width=2,
                                                                            height=2,
@@ -138,7 +139,7 @@ class UnityWrapper:
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     # print("2222222222222222222222222")
-    env = UnityWrapper(train_mode=True, base_port=5004)  #没有build出来之后的环境只能使用5004端口
+    env = UnityWrapper(train_mode=True, base_port=5004,file_name=r"D:\RL_SR\envs\limocar\AURP.exe")  #没有build出来之后的环境只能使用5004端口
     obs_shape_list, d_action_dim, c_action_dim = env.init()
     # print("obs_shape_list", obs_shape_list)
     # print("type:", type(obs_shape_list[0]))
