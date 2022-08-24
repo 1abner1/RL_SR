@@ -438,7 +438,11 @@ def train():
             print_running_reward += current_ep_reward / 1000
             print_running_episodes += 1
         print("Episode:{} Average Reward:{}".format(i_episode, current_ep_reward))
+<<<<<<< HEAD
         reword_log.add_scalar('reward_episode',current_ep_reward,i_episode)
+=======
+        reword_log.add_scalar('rewardwithepisode', i_episode, current_ep_reward)
+>>>>>>> RL_SR/master
         i_episode += 1
         save_step_episode = save_final_episode(i_episode)
         # print("执行到第",save_step_episode)
@@ -500,6 +504,10 @@ def test():
 
     start_time = datetime.now().replace(microsecond=0)
     time_step = 0
+<<<<<<< HEAD
+=======
+    current_ep_reward = 0
+>>>>>>> RL_SR/master
     # while time_step <= max_training_timesteps:
     for ep in range(1, total_test_episodes + 1):
         current_ep_reward = 0
