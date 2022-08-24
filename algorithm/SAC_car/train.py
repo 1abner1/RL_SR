@@ -122,7 +122,7 @@ args = parser.parse_args()
 # Environment
 # env = NormalizedActions(gym.make(args.env_name))
 # env = gym.make(args.env_name, continuous=True)
-env = UnityWrapper(args.env_name, seed=args.seed)
+env = UnityWrapper(None, seed=args.seed)
 env.reset(seed=args.seed)
 env.action_space.seed(args.seed)
 

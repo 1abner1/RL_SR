@@ -42,4 +42,15 @@ mlagents-learn "D:\RL_SR\Unity_office\ppo_dynamicobsavoid.yaml"  --env="D:\RL_SR
 在unity office中虚拟环境中使用
 mlagents-learn "D:\RL_SR\Unity_office\sac_carconavoid.yaml"  --env="D:\RL_SR\envs\dyobs2\car_seg_avoid.exe" --width=1000   --height=1000  --num-envs=1 --torch-device "cuda"  --time-scale=20    --run-id dyobs2_7   --results-dir "D:\RL_SR_DATA\results\dynamdyobs2"
 
- D:\>mlagents-learn "D:\RL_SR\Unity_office\ppo_dynamicobsavoid.yaml"  --env="D:\RL_SR\envs\dyobsovid3\car_seg_avoid.exe" --width=1000   --height=1000  --num-envs=2 --torch-device "cuda"  --time-scale=20    --run-id dyobs2_19   --results-dir "D:\RL_SR_DATA\results\dynamdyobs2"  --no-graphics --base-port 5009
+D:\>mlagents-learn "D:\RL_SR\Unity_office\ppo_dynamicobsavoid.yaml"  --env="D:\RL_SR\envs\dyobsovid3\car_seg_avoid.exe" --width=1000   --height=1000  --num-envs=2 --torch-device "cuda"  --time-scale=20    --run-id dyobs2_19   --results-dir "D:\RL_SR_DATA\results\dynamdyobs2"  --no-graphics --base-port 5009
+
+
+mlagents-learn “D:\RL_SR\Unity_office\poca_officecar.yaml”   --env="D:\RL_SR\envs\limocar_cxz\AURP.exe"     --width=1000   --height=1000  --num-envs=1 --torch-device "cuda"  --time-scale=20    --run-id office_limocar   --results-dir "D:\RL_SR_DATA\results\officelimocar"  --no-graphics --base-port 5012
+
+D:\>mlagents-learn "D:\RL_SR\Unity_office\ppo_dynamicobsavoid.yaml"  --env="D:\RL_SR\envs\dyobsovid3\car_seg_avoid.exe" --width=1000   --height=1000  --num-envs=2 --torch-device "cuda"  --time-scale=20    --run-id dyobs2_29   --results-dir "D:\RL_SR_DATA\results\dynamdyobs2"       --base-port 5009
+
+mlagents-learn "D:\RL_SR\Unity_office\poca_officecar.yaml"   --env="D:\limocar_cxz\AURP.exe"     --width=1000   --height=1000  --num-envs=1 --torch-device "cuda"  --time-scale=20    --run-id office_limocar12   --results-dir "D:\RL_SR_DATA\results\officelimocar"   --base-port 5012
+
+
+#dyobs3
+mlagents-learn “D:\RL_SR\Unity_office\sac_dyobs3.yaml”  --env=“D:\RL_SR\envs\dyobs3\car_seg_avoid.exe”  --width=1000   --height=1000  --num-envs=5 --torch-device "cuda"  --time-scale=20  --run-id  dyobs3_1   --base-port 5013   --no-graphics  --results-dir "D:\RL_SR_DATA\results\dynamdyobs3"

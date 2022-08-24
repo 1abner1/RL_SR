@@ -58,13 +58,12 @@ def draw_line(data_file, label, color, max_min_mean_sm=6, smooth_sm=40):
     data = pd.read_csv(filepath_or_buffer=data_file)
     #DDPG_predator_4.head(10)
     # data_x = data['Step']
-    data_x = data['Step'][0:650]
+    data_x = data['Step'][0:1000]
     # data_y = data['Value']
-    data_y = data['Value'][0:650]
-    data_y = (data_y+5000)/4000
-    data_y = data_y - 0.25
-    # data_y = data_y
-    print("纵轴坐标",data_y)
+    data_y = data['Value'][0:1000]
+    data_y = (data_y+28)/28
+    # data_y = data_y - 0.25
+    # print("纵轴坐标",data_y)
 
     data_max_y, data_min_y, data_mean_y \
         = get_max_min_mean(data_y, sm=max_min_mean_sm)
@@ -92,14 +91,14 @@ def draw_line(data_file, label, color, max_min_mean_sm=6, smooth_sm=40):
 def curve_plot():
     plt.figure()
 
-    data_files_path = [r'D:\RL_SR\plot\AMRL_data\dynamic obs\dynamicobs1\run-ppo_car_static_avoid1_carconavoid-tag-Environment_Cumulative Reward.csv',
-                       r'D:\RL_SR\plot\AMRL_data\dynamic obs\dynamicobs1\run-ppo_car_static_avoid2_carconavoid-tag-Environment_Cumulative Reward.csv',
-                       r'D:\RL_SR\plot\AMRL_data\dynamic obs\dynamicobs1\run-ppo_car_static_avoid3_carconavoid-tag-Environment_Cumulative Reward.csv',
-                       r'D:\RL_SR\plot\AMRL_data\dynamic obs\dynamicobs1\run-ppo_car_static_avoid5_carconavoid-tag-Environment_Cumulative Reward.csv',
-                       r'D:\RL_SR\plot\AMRL_data\dynamic obs\dynamicobs1\run-ppo_car_static_avoid6_carconavoid-tag-Environment_Cumulative Reward.csv',
-                       r'D:\RL_SR\plot\AMRL_data\dynamic obs\dynamicobs1\run-ppo_car_static_avoid7_carconavoid-tag-Environment_Cumulative Reward.csv',
-                       r'D:\RL_SR\plot\AMRL_data\dynamic obs\dynamicobs1\run-ppo_car_static_avoid8_carconavoid-tag-Environment_Cumulative Reward.csv',
-                       r'D:\RL_SR\plot\AMRL_data\dynamic obs\dynamicobs1\run-ppo_car_static_avoid9_carconavoid-tag-Environment_Cumulative Reward.csv'
+    data_files_path = [r'D:\RL_SR\plot\AMRL_data\dynamic obs\Dynamicobs2\run-dyobs2_21_carconavoid-tag-Environment_Cumulative Reward.csv',
+                       r'D:\RL_SR\plot\AMRL_data\dynamic obs\Dynamicobs2\run-dyobs2_24_carconavoid-tag-Environment_Cumulative Reward.csv',
+                       r'D:\RL_SR\plot\AMRL_data\dynamic obs\Dynamicobs2\run-dyobs2_25_carconavoid-tag-Environment_Cumulative Reward.csv',
+                       r'D:\RL_SR\plot\AMRL_data\dynamic obs\Dynamicobs2\run-dyobs2_26_carconavoid-tag-Environment_Cumulative Reward.csv',
+                       r'D:\RL_SR\plot\AMRL_data\dynamic obs\Dynamicobs2\run-dyobs2_27_carconavoid-tag-Environment_Cumulative Reward.csv',
+                       r'D:\RL_SR\plot\AMRL_data\dynamic obs\Dynamicobs2\run-dyobs2_20_carconavoid-tag-Environment_Cumulative Reward.csv',
+                       r'D:\RL_SR\plot\AMRL_data\dynamic obs\Dynamicobs2\run-dyobs2_29_carconavoid-tag-Environment_Cumulative Reward.csv',
+                       r'D:\RL_SR\plot\AMRL_data\dynamic obs\Dynamicobs2\run-dyobs2_28_carconavoid-tag-Environment_Cumulative Reward.csv'
                        ]
 
     labels = ['MAML',
@@ -114,7 +113,7 @@ def curve_plot():
 
     colors = ['r','g','m','y','olive','c','orange','b']
 
-    smooth_sms = [3,3,3,3,3,3,3,3]
+    smooth_sms = [9,9,9,9,9,9,9,9]
 
     for data_file_path, label, color, smooth_sm in zip(data_files_path, labels, colors, smooth_sms):
         draw_line(data_file=data_file_path,
@@ -128,9 +127,9 @@ def curve_plot():
     plt.ylabel("Reward")#纵坐标名字
     #plt.legend(loc="best")#图例
     plt.legend(loc="lower right")#图例
-    plt.ylim(0.93, 1)
+    plt.ylim(0, 1)
     plt.xlim(0, 600000)
-    plt.savefig("dynamic obs11 reward.pdf")
+    plt.savefig("dynamic obs2 reward.pdf")
     plt.show()
 
 

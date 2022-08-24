@@ -305,7 +305,7 @@ class CNNNet(nn.Module):
 
 def train():
     env_name = 'Unitylimocar'
-    reword_log = SummaryWriter('./limocar/train_log_18')
+    reword_log = SummaryWriter('./limocar/train_log_2')
     K_epochs = 2000  # update policy for K epochs in one PPO update
     eps_clip = 0.3  # clip parameter for PPO
     gamma = 0.98  # discount factor
@@ -332,7 +332,7 @@ def train():
     directory = "PPO_model"
 
     logging.basicConfig(level=logging.INFO)
-    env = UnityWrapper(train_mode=True, base_port=5005,file_name=r"D:\RL_SR\envs\limocar\AURP.exe")
+    env = UnityWrapper(train_mode=True, base_port=5011,file_name=r"D:\RL_SR\envs\limocar_cxz\AURP.exe")
     obs_shape_list, d_action_dim, c_action_dim = env.init()
     # 状态维度
     state_dim = obs_shape_list[0][0]
@@ -345,7 +345,7 @@ def train():
     directory = directory + '/' + env_name + '/'
     if not os.path.exists(directory):
         os.makedirs(directory)
-    checkpoint_path = directory + "PPO18_{}_{}_{}.pth".format(env_name, random_seed, run_num_pretrained)
+    checkpoint_path = directory + "PPO2_{}_{}_{}.pth".format(env_name, random_seed, run_num_pretrained)
     print("save checkpoint path : " + checkpoint_path)
     if random_seed:
         print("setting random seed to ", random_seed)
@@ -451,11 +451,11 @@ def test():
     reword_log = SummaryWriter('./limocar')
     K_epochs = 100  # update policy for K epochs in one PPO update
     eps_clip = 0.2  # clip parameter for PPO
-    gamma = 0.9  # discount factor
+    gamma = 0.98  # discount factor
     lr_actor = 0.0003  # learning rate for actor network
     lr_critic = 0.005  # learning rate for critic network
     random_seed = 0
-    max_ep_len = 100
+    max_ep_len = 1000
     action_std = 0.6  # starting std for action distribution (Multivariate Normal)
     run_num_pretrained = 0
     current_ep_reward = 0
@@ -465,7 +465,7 @@ def test():
     total_test_episodes = 1000
 
     logging.basicConfig(level=logging.INFO)
-    env = UnityWrapper(train_mode=False, base_port=5004)  # ,file_name=r"D:\RL_SR\envs\baselimocar\AURP.exe")
+    env = UnityWrapper(train_mode=False, base_port=50011,file_name=r"D:\RL_SR\envs\limocar_cxz\AURP.exe")
     obs_shape_list, d_action_dim, c_action_dim = env.init()
     # 状态维度
     state_dim = obs_shape_list[0][0]
@@ -476,7 +476,7 @@ def test():
     directory = directory + '/' + env_name + '/'
     if not os.path.exists(directory):
         os.makedirs(directory)
-    checkpoint_path = directory + "PPO_{}_{}_{}.pth".format(env_name, random_seed, run_num_pretrained)
+    checkpoint_path = directory + "PPO1_{}_{}_{}.pth".format(env_name, random_seed, run_num_pretrained)
     print("save checkpoint path : " + checkpoint_path)
     if random_seed:
         print("setting random seed to ", random_seed)
@@ -500,9 +500,9 @@ def test():
 
     start_time = datetime.now().replace(microsecond=0)
     time_step = 0
-    current_ep_reward = 0
     # while time_step <= max_training_timesteps:
     for ep in range(1, total_test_episodes + 1):
+        current_ep_reward = 0
         ep_reward = 0
         state = env.reset()
         state_image = state[0][0]  # 一张图像被处理成8个数字
@@ -520,7 +520,7 @@ def test():
             action = ppo_agent.selection_action(state)
             action = np.expand_dims(action, 0)
             state, reward, done, _ = env.step(None, action)
-            print("reward",reward)
+            # print("reward",reward)
             state_image11 = state[0][0]  # 一张图像被处理成8个数字
             state_ray11 = state[1][0]  # 404个数据
             # 这是处理env.stp 获得图像数据

@@ -39,11 +39,12 @@ class UnityWrapper(UnityToGymWrapper):
 
 
 if __name__ == "__main__":
-    env = UnityWrapper(
-        "venv_605",
-        seed=0,
-    )
-    env.reset(0)
-    a = env.reset()
+    env = UnityWrapper(None,seed=0,base_port=5004)
 
-    print(a)
+    for episode in range(100):
+        obs_list = env.reset()
+        for step in range(100):
+            # a = env.reset()
+            action = np.random.randn(1,2)
+            print("action",action)
+            obs_list, reward, done, max_step = env.step(action[0])
