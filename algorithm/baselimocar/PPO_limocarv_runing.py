@@ -305,7 +305,7 @@ class CNNNet(nn.Module):
 
 def train():
     env_name = 'Unitylimocar'
-    reword_log = SummaryWriter('./limocar/train_log_2')
+    reword_log = SummaryWriter('./limocar/train_zzy_env')
     K_epochs = 2000  # update policy for K epochs in one PPO update
     eps_clip = 0.3  # clip parameter for PPO
     gamma = 0.98  # discount factor
@@ -332,7 +332,7 @@ def train():
     directory = "PPO_model"
 
     logging.basicConfig(level=logging.INFO)
-    env = UnityWrapper(train_mode=True, base_port=5011,file_name=r"D:\RL_SR\envs\limocar_cxz\AURP.exe")
+    env = UnityWrapper(train_mode=True, base_port=5011,file_name=r"D:\zzy_env_ray_position\RLEnvironments.exe")
     obs_shape_list, d_action_dim, c_action_dim = env.init()
     # 状态维度
     state_dim = obs_shape_list[0][0]
@@ -438,11 +438,11 @@ def train():
             print_running_reward += current_ep_reward / 1000
             print_running_episodes += 1
         print("Episode:{} Average Reward:{}".format(i_episode, current_ep_reward))
-<<<<<<< HEAD
+
         reword_log.add_scalar('reward_episode',current_ep_reward,i_episode)
-=======
+
         reword_log.add_scalar('rewardwithepisode', i_episode, current_ep_reward)
->>>>>>> RL_SR/master
+
         i_episode += 1
         save_step_episode = save_final_episode(i_episode)
         # print("执行到第",save_step_episode)
@@ -504,10 +504,10 @@ def test():
 
     start_time = datetime.now().replace(microsecond=0)
     time_step = 0
-<<<<<<< HEAD
-=======
+
+
     current_ep_reward = 0
->>>>>>> RL_SR/master
+
     # while time_step <= max_training_timesteps:
     for ep in range(1, total_test_episodes + 1):
         current_ep_reward = 0

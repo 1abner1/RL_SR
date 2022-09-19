@@ -61,6 +61,7 @@ def draw_line(data_file, label, color, max_min_mean_sm=6, smooth_sm=40):
     data_x = data['Step'][0:600]
     # data_y = data['Value']
     data_y = data['Value'][0:600]
+    data_y = (data_y+1.5)/6.5
 
     data_max_y, data_min_y, data_mean_y \
         = get_max_min_mean(data_y, sm=max_min_mean_sm)
@@ -76,12 +77,12 @@ def draw_line(data_file, label, color, max_min_mean_sm=6, smooth_sm=40):
                      data_min_smooth_y,
                      data_mean_smooth_y,
                      facecolor=color,
-                     alpha=0.3)
+                     alpha=0.1)
     plt.fill_between(data_x,
                      data_mean_smooth_y,
                      data_max_smooth_y,
                      facecolor=color,
-                     alpha=0.3)
+                     alpha=0.1)
 
 
 
@@ -124,9 +125,9 @@ def curve_plot():
     plt.ylabel("Reward")#纵坐标名字
     #plt.legend(loc="best")#图例
     plt.legend(loc="lower right")#图例
-    # plt.ylim(-3.5, 0)
+    plt.ylim(0,1)
     plt.xlim(0, 300000)
-    plt.savefig("target search reward.pdf")
+    plt.savefig("target search reward1.pdf")
     plt.show()
 
 

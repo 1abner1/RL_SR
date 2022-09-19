@@ -23,5 +23,5 @@ ax.set_ylabel('Number of collisions')
 ax.set_xlabel("Algorithm")
 # ax.set_title('Scores by group and gender')
 ax.legend()
-
+plt.savefig("there camera number11.pdf")
 plt.show()

@@ -62,7 +62,7 @@ def draw_line(data_file, label, color, max_min_mean_sm=6, smooth_sm=40):
     # data_y = data['Value']
     data_y = data['Value'][0:1000]
     data_y = (data_y+28)/28
-    # data_y = data_y - 0.25
+    data_y = (data_y+3.5)/4.55
     # print("纵轴坐标",data_y)
 
     data_max_y, data_min_y, data_mean_y \
@@ -113,13 +113,13 @@ def curve_plot():
 
     colors = ['r','g','m','y','olive','c','orange','b']
 
-    smooth_sms = [9,9,9,9,9,9,9,9]
+    smooth_sms = [20,20,20,20,5,20,20,20]
 
     for data_file_path, label, color, smooth_sm in zip(data_files_path, labels, colors, smooth_sms):
         draw_line(data_file=data_file_path,
                   label=label,
                   color=color,
-                  max_min_mean_sm=10,
+                  max_min_mean_sm=30,
                   smooth_sm=smooth_sm)
 
     #figure的具体设置需要在直线等画完了在进行
@@ -129,7 +129,7 @@ def curve_plot():
     plt.legend(loc="lower right")#图例
     plt.ylim(0, 1)
     plt.xlim(0, 600000)
-    plt.savefig("dynamic obs2 reward.pdf")
+    plt.savefig("dynamic obs222 reward.pdf")
     plt.show()
 
 

@@ -62,6 +62,7 @@ def draw_line(data_file, label, color, max_min_mean_sm=6, smooth_sm=40):
     # data_y = data['Value']
     data_y = data['Value'][0:650]
     data_y = (data_y+5000)/4000
+    data_y = (data_y-0.80)/0.37
     print("纵轴坐标",data_y)
 
     data_max_y, data_min_y, data_mean_y \
@@ -78,12 +79,12 @@ def draw_line(data_file, label, color, max_min_mean_sm=6, smooth_sm=40):
                      data_min_smooth_y,
                      data_mean_smooth_y,
                      facecolor=color,
-                     alpha=0.3)
+                     alpha=0.1)
     plt.fill_between(data_x,
                      data_mean_smooth_y,
                      data_max_smooth_y,
                      facecolor=color,
-                     alpha=0.3)
+                     alpha=0.1)
 
 
 
@@ -112,13 +113,13 @@ def curve_plot():
 
     colors = ['r','g','m','y','olive','c','orange','b']
 
-    smooth_sms = [2,2,2,2,2,2,2,2]
+    smooth_sms = [20,20,20,20,20,20,20,20]
 
     for data_file_path, label, color, smooth_sm in zip(data_files_path, labels, colors, smooth_sms):
         draw_line(data_file=data_file_path,
                   label=label,
                   color=color,
-                  max_min_mean_sm=10,
+                  max_min_mean_sm=20,
                   smooth_sm=smooth_sm)
 
     #figure的具体设置需要在直线等画完了在进行
@@ -126,9 +127,9 @@ def curve_plot():
     plt.ylabel("Reward")#纵坐标名字
     #plt.legend(loc="best")#图例
     plt.legend(loc="lower right")#图例
-    # plt.ylim(-3.5, 0)
+    plt.ylim(0, 1)
     plt.xlim(0, 300000)
-    plt.savefig("dynamic obs reward.pdf")
+    plt.savefig("dynamic obs reward1.pdf")
     plt.show()
 
 

@@ -53,4 +53,31 @@ mlagents-learn "D:\RL_SR\Unity_office\poca_officecar.yaml"   --env="D:\limocar_c
 
 
 #dyobs3
-mlagents-learn “D:\RL_SR\Unity_office\sac_dyobs3.yaml”  --env=“D:\RL_SR\envs\dyobs3\car_seg_avoid.exe”  --width=1000   --height=1000  --num-envs=5 --torch-device "cuda"  --time-scale=20  --run-id  dyobs3_1   --base-port 5013   --no-graphics  --results-dir "D:\RL_SR_DATA\results\dynamdyobs3"
+mlagents-learn “D:\RL_SR\Unity_office\sac_dyobs3.yaml”  --env=“D:\RL_SR\envs\dyobs3\car_seg_avoid.exe”  --width=1000   --height=1000  --num-envs=2 --torch-device "cuda"  --time-scale=20  --run-id  dyobs3_17   --base-port 5013   --no-graphics  --results-dir "D:\RL_SR_DATA\results\dynamdyobs3"
+
+
+mlagents-learn "D:\RL_SR\Unity_office\ppo_zzy_env.yaml"   --env=“D:\zzy_env_rl\RLEnvironments.exe” --torch-device "cuda"  --time-scale=20 --width=600   --height=600 --run-id  zzy_env2_sac4  --results-dir="D:\RL_SR_DATA\results\zzy_env_train"   --base-port 50012   --num-envs=5
+
+
+
+
+
+mlagents-learn "D:\RL_SR\Unity_office\poca_difcamera.yaml"   --env=“D:\RL_SR\envs\dif_sensor_scren\car_seg_avoid.exe” --torch-device "cuda"  --time-scale=20 --width=600   --height=600 --run-id  difcamera_1  --results-dir="D:\RL_SR_DATA\results\differ_camera"   --base-port 50015   --num-envs=5
+
+mlagents-learn "D:\RL_SR\Unity_office\sac_difcamera.yaml"   --env=“D:\RL_SR\envs\dif_sensor_scren\car_seg_avoid.exe” --torch-device "cuda"  --time-scale=20 --width=600   --height=600 --run-id  difcamera_1  --results-dir="D:\RL_SR_DATA\results\differ_camera"   --base-port 50015   --num-envs=3
+
+
+ D:\>mlagents-learn "D:\RL_SR\Unity_office\poca_difcamera.yaml"   --env="D:\RL_SR\envs\dif_sensor_scren\car_seg_avoid.exe" --torch-device "cuda"  --time-scale=20 --width=600   --height=600 --run-id  adant_albation14  --results-dir="D:\RL_SR_DATA\results\albation_of_amrl"   --base-port 50015   --num-envs=10   --no-graphics
+
+ mlagents-learn “D:\RL_SR\Unity_office\ppo_zzy_env.yaml”   --env=“D:\zzy_env_ray_position\RLEnvironments.exe”   --torch-device "cuda"   --width=600   --height=600  --results-dir="D:\RL_SR_DATA\results\office_zzy"   --base-port 50015     --num-envs=5   --run-id=ppo_ray_position
+
+
+  mlagents-learn “D:\RL_SR\Unity_office\poca_zzy.yaml”   --env=“D:\zzy_env_ray_position\RLEnvironments.exe”   --torch-device "cuda"   --width=600   --height=600  --results-dir="D:\RL_SR_DATA\results\office_zzy"   --base-port 50015     --num-envs=5   --run-id=ppo_ray_position_3
+
+  mlagents-learn “D:\RL_SR\Unity_office\ppo_zzy_env.yaml”   --env=“D:\zzy_env_ray_position\RLEnvironments.exe”   --torch-device "cuda"   --width=600   --height=600  --results-dir="D:\RL_SR_DATA\results\office_zzy"   --base-port 50015     --num-envs=10   --run-id=ppo_ray_position_20
+
+
+  mlagents-learn “D:\RL_SR\Unity_office\ppo_zzy_env.yaml”   --env=“E:\zzy_env_exe\zzy_env.exe”   --torch-device "cuda"   --width=600   --height=600  --results-dir="D:\RL_SR_DATA\results\office_zzy"   --base-port 50015     --num-envs=10   --run-id=ppo20220909_1
+
+
+
