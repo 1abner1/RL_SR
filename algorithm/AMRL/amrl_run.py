@@ -25,10 +25,13 @@ from torch.utils.tensorboard import SummaryWriter  #记录log
 from ray_show.Ray_show import Ray_show
 from torch.distributions import MultivariateNormal
 import os
+import random
+import time
 
 device = torch.device('cpu')
 
-class PPO_Algorithm():
+
+class AMRL_Algorithm():
 
     def __init__(self,state_dim, action_dim, lr_actor, lr_critic, gamma, K_epochs, eps_clip, action_std_init=0.6):
         # super(PPO_Algorithm, self).__init__(self,state_dim,action_dim)
@@ -203,7 +206,6 @@ class Attention(nn.Module):#自定义类 继承nn.Module
 
     def __init__(self):#初始化函数
         super(Attention, self).__init__()#继承父类初始化函数
-
         self.model = nn.Sequential(
             nn.Linear(8, 64),
             nn.ReLU(inplace=True),
@@ -256,46 +258,61 @@ def ada_meta_rl():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     meta_learn = ml.MetaLearner(device,model_Gru,num_workers,num_actions,num_states,num_tasks,num_traj,traj_len,gamma,tau)
 
-def outloop_select_task():
-    task_pool = {"task1": "D:/Pytorch_RL_SR/algorithm\AMRL/task1/car_seg_avoid.exe",
-                 "task2": "D:/Pytorch_RL_SR/algorithm\AMRL/task2/car_seg_avoid.exe",
-                 "task3": "D:/Pytorch_RL_SR/algorithm\AMRL/task3/car_seg_avoid.exe",
-                 "task4": "D:/Pytorch_RL_SR/algorithm\AMRL/task4/car_seg_avoid.exe",
-                 "task5": "D:/Pytorch_RL_SR/algorithm\AMRL/task5/car_seg_avoid.exe",
-                 "task6": "D:/Pytorch_RL_SR/algorithm\AMRL/task6/car_seg_avoid.exe",
-                 "task7": "D:/Pytorch_RL_SR/algorithm\AMRL/task7/car_seg_avoid.exe",
-                 "task8": "D:/Pytorch_RL_SR/algorithm\AMRL/task8/car_seg_avoid.exe",
-                 "task9": "D:/Pytorch_RL_SR/algorithm\AMRL/task9/car_seg_avoid.exe",
-                 "task10": "D:/Pytorch_RL_SR/algorithm\AMRL/task10/car_seg_avoid.exe",
-                 "task11": "D:/Pytorch_RL_SR/algorithm\AMRL/task11/car_seg_avoid.exe",
-                 "task12": "D:/Pytorch_RL_SR/algorithm\AMRL/task12/car_seg_avoid.exe",
-                 "task13": "D:/Pytorch_RL_SR/algorithm\AMRL/task13/car_seg_avoid.exe",
-                 "task14": "D:/Pytorch_RL_SR/algorithm\AMRL/task14/car_seg_avoid.exe",
-                 "task15": "D:/Pytorch_RL_SR/algorithm\AMRL/task15/car_seg_avoid.exe",
-                 "task16": "D:/Pytorch_RL_SR/algorithm\AMRL/task16/car_seg_avoid.exe",
-                 "task17": "D:/Pytorch_RL_SR/algorithm\AMRL/task17/car_seg_avoid.exe",
-                 "task18": "D:/Pytorch_RL_SR/algorithm\AMRL/task18/car_seg_avoid.exe",
-                 "task19": "D:/Pytorch_RL_SR/algorithm\AMRL/task19/car_seg_avoid.exe",
-                 "task20": "D:/Pytorch_RL_SR/algorithm\AMRL/task20/car_seg_avoid.exe",
-                 "task21": "D:/Pytorch_RL_SR/algorithm\AMRL/task21/car_seg_avoid.exe",
-                 "task22": "D:/Pytorch_RL_SR/algorithm\AMRL/task22/car_seg_avoid.exe",
-                 "task23": "D:/Pytorch_RL_SR/algorithm\AMRL/task23/car_seg_avoid.exe",
-                 "task24": "D:/Pytorch_RL_SR/algorithm\AMRL/task24/car_seg_avoid.exe",
-                 "task25": "D:/Pytorch_RL_SR/algorithm\AMRL/task25/car_seg_avoid.exe",
-                 "task26": "D:/Pytorch_RL_SR/algorithm\AMRL/task26/car_seg_avoid.exe",
-                 "task27": "D:/Pytorch_RL_SR/algorithm\AMRL/task27/car_seg_avoid.exe",
-                 "task28": "D:/Pytorch_RL_SR/algorithm\AMRL/task28/car_seg_avoid.exe",
-                 "task29": "D:/Pytorch_RL_SR/algorithm\AMRL/task29/car_seg_avoid.exe",
-                 "task30": "D:/Pytorch_RL_SR/algorithm\AMRL/task30/car_seg_avoid.exe"
+def outloop_select_task(scene_name):
+    task_pool_target = {"task1": r"D:/Pytorch_RL_SR/algorithm/AMRL/task1/car_seg_avoid.exe",
+                 "task2": r"D:/Pytorch_RL_SR/algorithm/AMRL/task2/car_seg_avoid.exe",
+                 "task3": r"D:/Pytorch_RL_SR/algorithm/AMRL/task3/car_seg_avoid.exe",
+                 "task4": r"D:/Pytorch_RL_SR/algorithm/AMRL/task4/car_seg_avoid.exe",
+                 "task5": r"D:/Pytorch_RL_SR/algorithm/AMRL/task5/car_seg_avoid.exe",
+                  "task6": r"D:/Pytorch_RL_SR/algorithm/AMRL/task6/car_seg_avoid.exe",
+                 "task7": r"D:/Pytorch_RL_SR/algorithm/AMRL/task7/car_seg_avoid.exe",
+                 "task8": r"D:/Pytorch_RL_SR/algorithm/AMRL/task8/car_seg_avoid.exe",
+                 "task9": r"D:/Pytorch_RL_SR/algorithm/AMRL/task9/car_seg_avoid.exe"}
+    task_pool_static ={
+                 "task10": r"D:/Pytorch_RL_SR/algorithm/AMRL/task10/car_seg_avoid.exe",
+                 "task11": r"D:/Pytorch_RL_SR/algorithm/AMRL/task11/car_seg_avoid.exe",
+                 "task12": r"D:/Pytorch_RL_SR/algorithm/AMRL/task12/car_seg_avoid.exe",
+                 "task13": r"D:/Pytorch_RL_SR/algorithm/AMRL/task13/car_seg_avoid.exe",
+                 "task14": r"D:/Pytorch_RL_SR/algorithm/AMRL/task14/car_seg_avoid.exe",
+                 "task15": r"D:/Pytorch_RL_SR/algorithm/AMRL/task15/car_seg_avoid.exe",
+                 "task16": r"D:/Pytorch_RL_SR/algorithm/AMRL/task16/car_seg_avoid.exe",
+                 "task17": r"D:/Pytorch_RL_SR/algorithm/AMRL/task17/car_seg_avoid.exe",
+                 "task18": r"D:/Pytorch_RL_SR/algorithm/AMRL/task18/car_seg_avoid.exe",
+                 "task19": r"D:/Pytorch_RL_SR/algorithm/AMRL/task19/car_seg_avoid.exe",
+                 "task20": r"D:/Pytorch_RL_SR/algorithm/AMRL/task20/car_seg_avoid.exe"}
+    task_pool_dynim = {
+                 "task21": r"D:/Pytorch_RL_SR/algorithm/AMRL/task21/car_seg_avoid.exe",
+                 "task22": r"D:/Pytorch_RL_SR/algorithm/AMRL/task22/car_seg_avoid.exe",
+                 "task23": r"D:/Pytorch_RL_SR/algorithm/AMRL/task23/car_seg_avoid.exe",
+                 "task24": r"D:/Pytorch_RL_SR/algorithm/AMRL/task24/car_seg_avoid.exe",
+                 "task25": r"D:/Pytorch_RL_SR/algorithm/AMRL/task25/car_seg_avoid.exe",
+                 "task26": r"D:/Pytorch_RL_SR/algorithm/AMRL/task26/car_seg_avoid.exe",
+                 "task27": r"D:/Pytorch_RL_SR/algorithm/AMRL/task27/car_seg_avoid.exe",
+                 "task28": r"D:/Pytorch_RL_SR/algorithm/AMRL/task28/car_seg_avoid.exe",
+                 "task29": r"D:/Pytorch_RL_SR/algorithm/AMRL/task29/car_seg_avoid.exe",
+                 "task30": r"D:/Pytorch_RL_SR/algorithm/AMRL/task30/car_seg_avoid.exe"
                  }
-    select_task = task_pool["task1"]
+    #目标搜索场景
+    targe_scene_task = task_pool_target.keys()
+    targe_scene_task_choice = random.sample(targe_scene_task,1)
+    # 静态障碍物避障
+    static_scene_task = task_pool_static.keys()
+    static_scene_task_choice = random.sample(static_scene_task, 1)
+    # 动态障碍物避障
+    dynamic_scene_task = task_pool_dynim.keys()
+    dynamic_scene_task_choice = random.sample(dynamic_scene_task, 1)
 
-    return select_task
+    if scene_name == "target_scene":
+        select_task = targe_scene_task_choice
+        select_task_path = targe_scene_task.get(select_task[0])
+    if scene_name == "static_scene":
+        select_task = static_scene_task_choice
+        select_task_path = task_pool_static.get(select_task[0])
+    if scene_name == "dynamic_scene":
+        select_task = dynamic_scene_task_choice
+        select_task_path = task_pool_dynim.get(select_task[0])
+    return select_task_path
 
-def meta_train():
-   # 创建30种环境，创建一个字典一个数字对应一个任务
-   # env = unity_wrapper.UnityWrapper(train_mode=True, base_port=5004,file_name=r"D:\Pytorch_RL_SR\algorithm\AMRL\testtask\car_seg_avoid.exe")
-   pass
 
 def perceaction_image(state_image):
     state_obs_image = image(state_image)
@@ -437,114 +454,118 @@ def save_final_episode(episdode1):
         f.write(str(episdode1))  # 列名
     return episdode1
 
-def main():
-    #-------------------参数--------------------
-    action_dim = 2
-    env_name = 'Unitylimocar'
-    reword_log = SummaryWriter('./limocar')
-    K_epochs = 100  # update policy for K epochs in one PPO update
-    eps_clip = 0.2  # clip parameter for PPO
-    gamma = 0.9  # discount factor
-    lr_actor = 0.0003  # learning rate for actor network
-    lr_critic = 0.005  # learning rate for critic network
-    random_seed = 0
-    max_ep_len = 100
-    log_freq = max_ep_len * 2
-    print_freq = max_ep_len * 1
-    update_timestep = max_ep_len * 4
-    save_model_freq = int(1e3)
-    action_std = 0.6  # starting std for action distribution (Multivariate Normal)
-    action_std_decay_rate = 0.05  # linearly decay action_std (action_std = action_std - action_std_decay_rate)
-    min_action_std = 0.1  # minimum action_std (stop decay after action_std <= min_action_std)
-    action_std_decay_freq = int(2.5e4)
-    max_training_timesteps = int(3e8)
-    # printing and logging variables
-    print_running_reward = 0
-    print_running_episodes = 1
-    run_num_pretrained = 0
-    current_ep_reward = 0
-    load_model = False
-    image_conv = True
-    directory = "PPO_model"
-    # -------------------参数--------------------
-
-    # -----------制作虚实结合的log文件--------------
-    show_SR_figure = mlog.run()
-    # -----------记录奖励函数曲线-------------------
-    reword_log = SummaryWriter('./car')
-    # -----------打印unity相关的信息---------------
-    logging.basicConfig(level=logging.INFO)
-    # -----------获得参数信息----------------------
-    parmater = get_args()  #这个还不太会使用
-    # par1 = parmater("--task")
-    env = UnityWrapper(train_mode=True, base_port=5004,file_name=r"D:\RL_SR\envs\test\car_seg_avoid.exe")
-    obs_shape_list, d_action_dim, c_action_dim = env.init()
-    state_dim = obs_shape_list
-    print("总的状态维度：",state_dim) #(前摄像头图像，左摄像头图像，右摄像头图像，射线数据，目标位置和速度)
-    print("前摄像头维度：", state_dim[0])
-    print("左摄像头维度：", state_dim[1])
-    print("右摄像头维度：", state_dim[2])
-    print("雷达维度：", state_dim[3])
-    print("向量维度：", state_dim[4])
-
-    ppo_agent = PPO_Algorithm(state_dim, action_dim, lr_actor, lr_critic, gamma, K_epochs, eps_clip, action_std)
-    #train makeure task
-    for episode in range(100):
-        #---------------------------感知层--------------------------------
-        obs_list = env.reset()
-        total_fusion_sensor_date = fusion_sensor_date(obs_list)
-        print("total_fusion_sensor_date",total_fusion_sensor_date)
-        c_action = np.random.randn(1, 2)
-        print("c_action",c_action)
-        d_action = None
-        obs_list, reward, done, max_step = env.step(d_action, c_action)
-        state_dim = 40  # 摄像头最后八维数据（3个摄像头），雷达最后八维。
-
-        for step in range(2000):
-            state = env.reset()
-            state_image_front = state[0][0]
-            state_image_left = state[1][0]
-            state_image_right = state[2][0]
-            state_ray = state[3][0]
-            state_vector = state[4][0]
-            state_image_front_conv = env_rest_image_conv(state_image_front)
-            state_image_left_conv = env_rest_image_conv(state_image_left)
-            state_image_right_conv = env_rest_image_conv(state_image_right)
-            front_image_Wight = Attention(torch.tensor(state_image_front_conv))
-            left_image_Wight = Attention(torch.tensor(state_image_left_conv))
-            right_image_Wight = Attention(torch.tensor(state_image_right_conv))
-            fusion_homogeny_image_state = state_image_front_conv*front_image_Wight + state_image_left_conv*left_image_Wight + state_image_right_conv*right_image_Wight
-            ray_conv = ray_trans(state_ray)
-            ray_conv_wight = Attention(torch.tensor(ray_conv))
-            vector_wight = Attention(torch.tensor(state_vector))
-            fusion_hetergeneity_sensor = ray_conv*ray_conv_wight + state_image_front_conv*front_image_Wight + state_vector*vector_wight
-
-            fusion_total_state = date_jonint(fusion_homogeny_image_state,fusion_hetergeneity_sensor)
-
-
-
-        for step in range(2):
-            # print("环境没有问题")
-            pass
-            # ------------添加经验优先回放-------------
-            next_state = state
-            action = np.expand_dims(action, 0)
-            ppo_agent.Store_Sample(state1, action, reward, next_state, done)  # 存经验
-            mini_batch, idxs, is_weights = ppo_agent.memory.sample(
-                exper_batchsize)  # 取经验 mini_batch 经验池，idxs 为下标值，is_weights 权重值
-            mini_batch = np.array(mini_batch, dtype=object).transpose()
-            states = np.vstack(mini_batch[0])  # 按理说状态应该从一堆状态中进行采样，看代码看是直接是随机数生成的
-            actions = list(mini_batch[1])
-            rewards = list(mini_batch[2])
-            next_states = np.vstack(mini_batch[3])
-            dones = mini_batch[4]
-            states1 = array_tensor(states)
-            actions1 = array_tensor(actions)
-            rewards1 = array_tensor(rewards)
-            rewards1 = array_value(rewards1)
-            dones = array_flase(dones)
-            is_weights1 = is_weights
-            is_weights1 = array_tensor(is_weights1)
+# def main():
+#     #-------------------参数--------------------
+#     action_dim = 2
+#     env_name = 'Unitylimocar'
+#     reword_log = SummaryWriter('./limocar')
+#     K_epochs = 100  # update policy for K epochs in one PPO update
+#     eps_clip = 0.2  # clip parameter for PPO
+#     gamma = 0.9  # discount factor
+#     lr_actor = 0.0003  # learning rate for actor network
+#     lr_critic = 0.005  # learning rate for critic network
+#     random_seed = 0
+#     max_ep_len = 100
+#     log_freq = max_ep_len * 2
+#     print_freq = max_ep_len * 1
+#     update_timestep = max_ep_len * 4
+#     save_model_freq = int(1e3)
+#     action_std = 0.6  # starting std for action distribution (Multivariate Normal)
+#     action_std_decay_rate = 0.05  # linearly decay action_std (action_std = action_std - action_std_decay_rate)
+#     min_action_std = 0.1  # minimum action_std (stop decay after action_std <= min_action_std)
+#     action_std_decay_freq = int(2.5e4)
+#     max_training_timesteps = int(3e8)
+#     # printing and logging variables
+#     print_running_reward = 0
+#     print_running_episodes = 1
+#     run_num_pretrained = 0
+#     current_ep_reward = 0
+#     load_model = False
+#     image_conv = True
+#     directory = "PPO_model"
+#     # -------------------参数--------------------
+#
+#     # -----------制作虚实结合的log文件--------------
+#     show_SR_figure = mlog.run()
+#     # -----------记录奖励函数曲线-------------------
+#     reword_log = SummaryWriter('./car')
+#     # -----------打印unity相关的信息---------------
+#     logging.basicConfig(level=logging.INFO)
+#     # -----------获得参数信息----------------------
+#     parmater = get_args()  #这个还不太会使用
+#     # par1 = parmater("--task")
+#     # 目标搜索场景（1-10）
+#     target_search_scene = outloop_select_task()
+#     # 静态障碍物避障场景（11-20）
+#     static_obs_avoid_scene = outloop_select_task()
+#     # 动态障碍物避障场景（21-30）
+#     dynamic_obs_avoid_scene = outloop_select_task()
+#
+#     env = UnityWrapper(train_mode=True, base_port=5004,file_name=r"D:\RL_SR\envs\test\car_seg_avoid.exe")
+#     obs_shape_list, d_action_dim, c_action_dim = env.init()
+#     state_dim = obs_shape_list
+#     print("总的状态维度：",state_dim) #(前摄像头图像，左摄像头图像，右摄像头图像，射线数据，目标位置和速度)
+#     print("前摄像头维度：", state_dim[0])
+#     print("左摄像头维度：", state_dim[1])
+#     print("右摄像头维度：", state_dim[2])
+#     print("雷达维度：", state_dim[3])
+#     print("向量维度：", state_dim[4])
+#
+#     AMRL_agent = AMRL_Algorithm(state_dim, action_dim, lr_actor, lr_critic, gamma, K_epochs, eps_clip, action_std)
+#     #train makeure task
+#     for episode in range(100):
+#         #---------------------------感知层--------------------------------
+#         obs_list = env.reset()
+#         total_fusion_sensor_date = fusion_sensor_date(obs_list)
+#         print("total_fusion_sensor_date",total_fusion_sensor_date)
+#         c_action = np.random.randn(1, 2)
+#         print("c_action",c_action)
+#         d_action = None
+#         obs_list, reward, done, max_step = env.step(d_action, c_action)
+#         state_dim = 40  # 摄像头最后八维数据（3个摄像头），雷达最后八维。
+#
+#         for step in range(2000):
+#             state = env.reset()
+#             state_image_front = state[0][0]
+#             state_image_left = state[1][0]
+#             state_image_right = state[2][0]
+#             state_ray = state[3][0]
+#             state_vector = state[4][0]
+#             state_image_front_conv = env_rest_image_conv(state_image_front)
+#             state_image_left_conv = env_rest_image_conv(state_image_left)
+#             state_image_right_conv = env_rest_image_conv(state_image_right)
+#             front_image_Wight = Attention(torch.tensor(state_image_front_conv))
+#             left_image_Wight = Attention(torch.tensor(state_image_left_conv))
+#             right_image_Wight = Attention(torch.tensor(state_image_right_conv))
+#             fusion_homogeny_image_state = state_image_front_conv*front_image_Wight + state_image_left_conv*left_image_Wight + state_image_right_conv*right_image_Wight
+#             ray_conv = ray_trans(state_ray)
+#             ray_conv_wight = Attention(torch.tensor(ray_conv))
+#             vector_wight = Attention(torch.tensor(state_vector))
+#             fusion_hetergeneity_sensor = ray_conv*ray_conv_wight + state_image_front_conv*front_image_Wight + state_vector*vector_wight
+#
+#             fusion_total_state = date_jonint(fusion_homogeny_image_state,fusion_hetergeneity_sensor)
+#
+#
+#         for step in range(2):
+#             # print("环境没有问题")
+#             # ------------添加经验优先回放-------------
+#             next_state = state
+#             action = np.expand_dims(action, 0)
+#             AMRL_agent.Store_Sample(fusion_total_state, action, reward, next_state, done)  # 存经验
+#             mini_batch, idxs, is_weights = AMRL_agent.memory.sample(exper_batchsize)  # 取经验 mini_batch 经验池，idxs 为下标值，is_weights 权重值
+#             mini_batch = np.array(mini_batch, dtype=object).transpose()
+#             states = np.vstack(mini_batch[0])  # 按理说状态应该从一堆状态中进行采样，看代码看是直接是随机数生成的
+#             actions = list(mini_batch[1])
+#             rewards = list(mini_batch[2])
+#             next_states = np.vstack(mini_batch[3])
+#             dones = mini_batch[4]
+#             states1 = array_tensor(states)
+#             actions1 = array_tensor(actions)
+#             rewards1 = array_tensor(rewards)
+#             rewards1 = array_value(rewards1)
+#             dones = array_flase(dones)
+#             is_weights1 = is_weights
+#             is_weights1 = array_tensor(is_weights1)
             # ------------添加经验优先回放-------------
 
 def train():
@@ -575,7 +596,6 @@ def train():
     checkpoint_path = directory + "PPO_{}_{}_{}.pth".format(env_name, random_seed, run_num_pretrained)
     print("save checkpoint path : " + checkpoint_path)
     # -------------------参数--------------------
-
     # -----------制作虚实结合的log文件--------------
     show_SR_figure = mlog.run()
     # -----------记录奖励函数曲线-------------------
@@ -585,7 +605,9 @@ def train():
     # -----------获得参数信息----------------------
     parmater = get_args()  # 这个还不太会使用
     # par1 = parmater("--task")
-    env = UnityWrapper(train_mode=True, base_port=5004, file_name=r"D:\RL_SR\envs\test\car_seg_avoid.exe")
+    env_path = outloop_select_task("target_scene")
+    # env = UnityWrapper(train_mode=True, base_port=5004, file_name=r"D:\RL_SR\envs\test\car_seg_avoid.exe")
+    env = UnityWrapper(train_mode=True, base_port=5004, file_name= env_path)
     obs_shape_list, d_action_dim, c_action_dim = env.init()
     state_dim = obs_shape_list
     print("总的状态维度：", state_dim)  # (前摄像头图像，左摄像头图像，右摄像头图像，射线数据，目标位置和速度)
@@ -595,7 +617,7 @@ def train():
     print("雷达维度：", state_dim[3])
     print("向量维度：", state_dim[4])
 
-    ppo_agent = PPO_Algorithm(state_dim, action_dim, lr_actor, lr_critic, gamma, K_epochs, eps_clip, action_std)
+    ppo_agent = AMRL_Algorithm(state_dim, action_dim, lr_actor, lr_critic, gamma, K_epochs, eps_clip, action_std)
     # train makeure task
     for episode in range(100):
         state = env.reset()
@@ -637,6 +659,189 @@ def train():
 
             save_step_episode = save_final_episode(episode)
     env.close()
+
+
+def test():
+    print("============================================================================================")
+    target_search_scene_test_env = r"D:\Pytorch_RL_SR\algorithm\AMRL\task1\car_seg_avoid.exe"
+    static_avoid_scene_test_env = r"D:\Pytorch_RL_SR\algorithm\AMRL\task1\car_seg_avoid.exe"
+    dynamic_avoid_scene_test_env = r"D:\Pytorch_RL_SR\algorithm\AMRL\task1\car_seg_avoid.exe"
+    env_name = "usvcpugridetomove06100848action3"
+    has_continuous_action_space = True
+    max_ep_len = 1000  # max timesteps in one episode
+    action_std = 0.1  # set same std for action distribution which was used while saving
+
+    render = True  # render environment on screen
+    frame_delay = 0  # if required; add delay b/w frames
+
+    total_test_episodes = 1000  # total num of testing episodes
+
+    K_epochs = 80  # update policy for K epochs
+    eps_clip = 0.2  # clip parameter for PPO
+    gamma = 0.99  # discount factor
+
+    lr_actor = 0.0003  # learning rate for actor
+    lr_critic = 0.001  # learning rate for critic
+
+    #####################################################
+    logging.basicConfig(level=logging.INFO)
+    env = UnityWrapper(train_mode=False, base_port=5004,file_name=static_avoid_scene_test_env)  # 测试三种环境分别是目标搜索，静态障碍物避障和动态障碍物避障
+    obs_shape_list, d_action_dim, c_action_dim = env.init()
+    # state space dimension
+    state_dim = obs_shape_list[0][0][0]
+    # state_dim = env.observation_space.shape[0]
+    # action space dimension
+    if has_continuous_action_space:
+        # action_dim = env.action_space.shape[0]
+        action_dim = c_action_dim
+    else:
+        action_dim = d_action_dim
+        # action_dim = env.action_space.n
+    # initialize a PPO agent
+    AMRL_agent = AMRL_Algorithm(state_dim, action_dim, lr_actor, lr_critic, gamma, K_epochs, eps_clip, action_std)
+
+    # preTrained weights directory
+    random_seed = 0  #### set this to load a particular checkpoint trained on random seed
+    run_num_pretrained = 0  #### set this to load a particular checkpoint num
+
+    directory = "PPO_model" + '/' + env_name + '/'
+    checkpoint_path = directory + "PPO_{}_{}_{}.pth".format(env_name, random_seed, run_num_pretrained)
+    print("loading network from : " + checkpoint_path)
+
+    AMRL_agent.load(checkpoint_path)
+
+    print("--------------------------------------------------------------------------------------------")
+    test_running_reward = 0
+    for ep in range(1, total_test_episodes + 1):
+        ep_reward = 0
+        state = env.reset()
+        state = state[0][0]
+        for t in range(1, max_ep_len + 1):
+            action = AMRL_agent.select_action(state)
+            state, reward, done, _ = env.step(None, np.expand_dims(action, 0))
+            state = state[0][0]
+            reward = float(reward[0])
+            done = bool(done[0])
+            ep_reward += reward
+            if render:
+                # env.render()
+                time.sleep(frame_delay)
+            if done:
+                break
+        # clear buffer
+        AMRL_agent.buffer.clear()
+        test_running_reward += ep_reward
+        print('Episode: {} \t\t Reward: {}'.format(ep, round(ep_reward, 2)))
+        ep_reward = 0
+
+    env.close()
+    print("============================================================================================")
+    avg_test_reward = test_running_reward / total_test_episodes
+    avg_test_reward = round(avg_test_reward, 2)
+    print("average test reward : " + str(avg_test_reward))
+    print("============================================================================================")
+
+def image_add_ray_total_state(state_image1,state_ray1):
+    state_image_list = state_image1.numpy().tolist()[0]
+    state_ray_list = state_ray1.numpy().tolist()
+    state_image_list.extend(state_ray_list)
+    stte_total_irp = state_image_list
+    state = stte_total_irp
+    return state
+
+def env_step_image_conv(state_image11):
+    obs_arry1 = np.array(state_image11)
+    obs_tensor2 = torch.from_numpy(obs_arry1)
+    obs_tensor_input2 = obs_tensor2.unsqueeze(dim=0)
+    changge_obs_state3 = obs_tensor_input2.view(1, 3, 84, 84)
+    state = changge_obs_state3
+    net4 = CNNNet()
+    OUTPUT_obs5 = net4.forward(state)
+    out_obs_array6 = OUTPUT_obs5[0]
+    out_obs_array7 = out_obs_array6.detach().numpy()
+    input_obs_state8 = torch.from_numpy(out_obs_array7)
+    state = input_obs_state8.unsqueeze(dim=0)
+    env_step_state_image = state * 10
+
+    return env_step_state_image
+
+def reaL_limocar_test():
+    from ros_car import RosCar
+    env_name = 'Unitylimocar'
+    reword_log = SummaryWriter('./limocar')
+    K_epochs = 100  # update policy for K epochs in one PPO update
+    eps_clip = 0.2  # clip parameter for PPO
+    gamma = 0.9  # discount factor
+    lr_actor = 0.0003  # learning rate for actor network
+    lr_critic = 0.005  # learning rate for critic network
+    random_seed = 0
+    max_ep_len = 100
+    action_std = 0.6  # starting std for action distribution (Multivariate Normal)
+    run_num_pretrained = 0
+    current_ep_reward = 0
+    load_model = True
+    image_conv = True
+    directory = "PPO_model"
+    total_test_episodes = 1000
+    c_action_dim = 2
+    limocar = RosCar()
+
+    checkpoint_path = r"./mode/PPO_Unitylimocar_0_0.pth"
+
+    # True表示需要卷积,False
+    if (image_conv):
+        state_dim = 16  # 这一步非常重要
+    else:
+        # 仅有位置信息
+        state_dim = 8
+    # 确定智能体
+    action_dim = 2
+    AMRL_agent = AMRL_Algorithm(state_dim, action_dim, lr_actor, lr_critic, gamma, K_epochs, eps_clip, action_std)
+
+    # 是否加载模型
+    if (load_model):
+        AMRL_agent.load_network_parm(checkpoint_path)  # 打开加载权重继续训练
+        # i_episode = load_final_episode()
+        print("加载模型进行验证实验")
+    else:
+        print("重新训练")
+        i_episode = 0
+
+    time_step = 0
+
+    # while time_step <= max_training_timesteps:
+    for ep in range(1, total_test_episodes + 1):
+        ep_reward = 0
+        state = limocar.get_rl_obs_list()
+        state_image = state[0][0]  # 一张图像被处理成8个数字
+        state_ray = state[1][0]  # 404个数据
+        #  处理成env.reset 的图像数据
+        # --------图像处理-----
+        state_image1 = env_rest_image_conv(state_image)
+        # ----------雷达处理-------
+        state_ray = state_ray[0:202]
+        state_ray1 = ray_trans(state_ray)
+        # ----------图像和雷达数据合并-------
+        state = image_add_ray_total_state(state_image1, state_ray1)
+
+        for t in range(1, max_ep_len + 1):
+            # select action with policy #env.reset 产生的state 需要卷积处理
+            action = AMRL_agent.selection_action(state)
+            action = np.expand_dims(action, 0)
+            # state, reward, done, _ = env.step(None, action)
+            state, reward, done, _ = limocar.env_step(action)
+            state_image11 = state[0][0]  # 一张图像被处理成8个数字
+            state_ray11 = state[1][0]  # 404个数据
+            # 这是处理env.stp 获得图像数据
+            # ----------------处理图像--------------------------------
+            env_step_state_image = env_step_image_conv(state_image11)
+            # ---------------雷达数据处理----------
+            state_ray11 = state_ray[0:202]
+            ray_step_state = ray_trans(state_ray11)
+            # ----------图像和雷达数据合并-------
+            state = image_add_ray_total_state(env_step_state_image, ray_step_state)
+
+    limocar.stop()
 
 
 if __name__ == "__main__":
