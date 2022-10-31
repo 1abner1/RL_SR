@@ -27,6 +27,7 @@ from torch.distributions import MultivariateNormal
 import os
 import random
 import time
+from per_expericence.prioritized_memory import Memory
 
 device = torch.device('cpu')
 
@@ -218,6 +219,58 @@ class Attention(nn.Module):#自定义类 继承nn.Module
     def forward(self, x):
         x = self.model(x)
 
+
+class ActorCritic(nn.Module):
+    def __init__(self, state_dim, action_dim, has_continuous_action_space, action_std_init):
+        super(ActorCritic, self).__init__()
+
+        self.has_continuous_action_space = has_continuous_action_space
+
+        if has_continuous_action_space:
+            self.action_dim = action_dim
+            self.action_var = torch.full((action_dim,), action_std_init * action_std_init).to(device)
+
+        # actor
+        if has_continuous_action_space:
+            self.actor = nn.Sequential(
+                nn.Linear(state_dim, 64),
+                nn.Tanh(),
+                nn.Linear(64, 64),
+                nn.Tanh(),
+                nn.Linear(64, action_dim),
+                nn.Tanh()
+            )
+        else:
+            self.actor = nn.Sequential(
+                nn.Linear(state_dim, 64),
+                nn.Tanh(),
+                nn.Linear(64, 64),
+                nn.Tanh(),
+                nn.Linear(64, action_dim),
+                nn.Softmax(dim=-1)
+            )
+
+        # critic
+        self.critic = nn.Sequential(
+            nn.Linear(state_dim, 64),
+            nn.Tanh(),
+            nn.Linear(64, 64),
+            nn.Tanh(),
+            nn.Linear(64, 1)
+        )
+        self.MLP = MLP.MLP()  # 使用soft 注意力机制
+
+    def set_action_std(self, new_action_std):
+
+        if self.has_continuous_action_space:
+            self.action_var = torch.full((self.action_dim,), new_action_std * new_action_std).to(device)
+        else:
+            print("--------------------------------------------------------------------------------------------")
+            print("WARNING : Calling ActorCritic::set_action_std() on discrete action space policy")
+            print("--------------------------------------------------------------------------------------------")
+
+    def forward(self):
+        raise NotImplementedError
 
 def get_args():
     parser = argparse.ArgumentParser()
@@ -454,119 +507,77 @@ def save_final_episode(episdode1):
         f.write(str(episdode1))  # 列名
     return episdode1
 
-# def main():
-#     #-------------------参数--------------------
-#     action_dim = 2
-#     env_name = 'Unitylimocar'
-#     reword_log = SummaryWriter('./limocar')
-#     K_epochs = 100  # update policy for K epochs in one PPO update
-#     eps_clip = 0.2  # clip parameter for PPO
-#     gamma = 0.9  # discount factor
-#     lr_actor = 0.0003  # learning rate for actor network
-#     lr_critic = 0.005  # learning rate for critic network
-#     random_seed = 0
-#     max_ep_len = 100
-#     log_freq = max_ep_len * 2
-#     print_freq = max_ep_len * 1
-#     update_timestep = max_ep_len * 4
-#     save_model_freq = int(1e3)
-#     action_std = 0.6  # starting std for action distribution (Multivariate Normal)
-#     action_std_decay_rate = 0.05  # linearly decay action_std (action_std = action_std - action_std_decay_rate)
-#     min_action_std = 0.1  # minimum action_std (stop decay after action_std <= min_action_std)
-#     action_std_decay_freq = int(2.5e4)
-#     max_training_timesteps = int(3e8)
-#     # printing and logging variables
-#     print_running_reward = 0
-#     print_running_episodes = 1
-#     run_num_pretrained = 0
-#     current_ep_reward = 0
-#     load_model = False
-#     image_conv = True
-#     directory = "PPO_model"
-#     # -------------------参数--------------------
-#
-#     # -----------制作虚实结合的log文件--------------
-#     show_SR_figure = mlog.run()
-#     # -----------记录奖励函数曲线-------------------
-#     reword_log = SummaryWriter('./car')
-#     # -----------打印unity相关的信息---------------
-#     logging.basicConfig(level=logging.INFO)
-#     # -----------获得参数信息----------------------
-#     parmater = get_args()  #这个还不太会使用
-#     # par1 = parmater("--task")
-#     # 目标搜索场景（1-10）
-#     target_search_scene = outloop_select_task()
-#     # 静态障碍物避障场景（11-20）
-#     static_obs_avoid_scene = outloop_select_task()
-#     # 动态障碍物避障场景（21-30）
-#     dynamic_obs_avoid_scene = outloop_select_task()
-#
-#     env = UnityWrapper(train_mode=True, base_port=5004,file_name=r"D:\RL_SR\envs\test\car_seg_avoid.exe")
-#     obs_shape_list, d_action_dim, c_action_dim = env.init()
-#     state_dim = obs_shape_list
-#     print("总的状态维度：",state_dim) #(前摄像头图像，左摄像头图像，右摄像头图像，射线数据，目标位置和速度)
-#     print("前摄像头维度：", state_dim[0])
-#     print("左摄像头维度：", state_dim[1])
-#     print("右摄像头维度：", state_dim[2])
-#     print("雷达维度：", state_dim[3])
-#     print("向量维度：", state_dim[4])
-#
-#     AMRL_agent = AMRL_Algorithm(state_dim, action_dim, lr_actor, lr_critic, gamma, K_epochs, eps_clip, action_std)
-#     #train makeure task
-#     for episode in range(100):
-#         #---------------------------感知层--------------------------------
-#         obs_list = env.reset()
-#         total_fusion_sensor_date = fusion_sensor_date(obs_list)
-#         print("total_fusion_sensor_date",total_fusion_sensor_date)
-#         c_action = np.random.randn(1, 2)
-#         print("c_action",c_action)
-#         d_action = None
-#         obs_list, reward, done, max_step = env.step(d_action, c_action)
-#         state_dim = 40  # 摄像头最后八维数据（3个摄像头），雷达最后八维。
-#
-#         for step in range(2000):
-#             state = env.reset()
-#             state_image_front = state[0][0]
-#             state_image_left = state[1][0]
-#             state_image_right = state[2][0]
-#             state_ray = state[3][0]
-#             state_vector = state[4][0]
-#             state_image_front_conv = env_rest_image_conv(state_image_front)
-#             state_image_left_conv = env_rest_image_conv(state_image_left)
-#             state_image_right_conv = env_rest_image_conv(state_image_right)
-#             front_image_Wight = Attention(torch.tensor(state_image_front_conv))
-#             left_image_Wight = Attention(torch.tensor(state_image_left_conv))
-#             right_image_Wight = Attention(torch.tensor(state_image_right_conv))
-#             fusion_homogeny_image_state = state_image_front_conv*front_image_Wight + state_image_left_conv*left_image_Wight + state_image_right_conv*right_image_Wight
-#             ray_conv = ray_trans(state_ray)
-#             ray_conv_wight = Attention(torch.tensor(ray_conv))
-#             vector_wight = Attention(torch.tensor(state_vector))
-#             fusion_hetergeneity_sensor = ray_conv*ray_conv_wight + state_image_front_conv*front_image_Wight + state_vector*vector_wight
-#
-#             fusion_total_state = date_jonint(fusion_homogeny_image_state,fusion_hetergeneity_sensor)
-#
-#
-#         for step in range(2):
-#             # print("环境没有问题")
-#             # ------------添加经验优先回放-------------
-#             next_state = state
-#             action = np.expand_dims(action, 0)
-#             AMRL_agent.Store_Sample(fusion_total_state, action, reward, next_state, done)  # 存经验
-#             mini_batch, idxs, is_weights = AMRL_agent.memory.sample(exper_batchsize)  # 取经验 mini_batch 经验池，idxs 为下标值，is_weights 权重值
-#             mini_batch = np.array(mini_batch, dtype=object).transpose()
-#             states = np.vstack(mini_batch[0])  # 按理说状态应该从一堆状态中进行采样，看代码看是直接是随机数生成的
-#             actions = list(mini_batch[1])
-#             rewards = list(mini_batch[2])
-#             next_states = np.vstack(mini_batch[3])
-#             dones = mini_batch[4]
-#             states1 = array_tensor(states)
-#             actions1 = array_tensor(actions)
-#             rewards1 = array_tensor(rewards)
-#             rewards1 = array_value(rewards1)
-#             dones = array_flase(dones)
-#             is_weights1 = is_weights
-#             is_weights1 = array_tensor(is_weights1)
-            # ------------添加经验优先回放-------------
+
+def Store_Sample(state, action, reward, next_state, done):
+        # error = self.loss   #需要传入loss作为值
+        error = np.random.rand(1)
+        # print("error111111111111111111111111111",error)
+        Memory.add(error, (state, action, reward, next_state, done))
+
+def array_tensor(array_numpy):
+    pool =[]
+    for i in array_numpy:
+        i_tensor = torch.tensor(i,dtype=torch.float32)
+        pool.append(i_tensor)
+    return pool
+def array_value(array_value):
+    pool =[]
+    for i in array_value:
+        i_tensor = i.clone().detach()
+        i_numpy = i_tensor.numpy()
+        pool.append(i_numpy[0])
+    return pool
+def array_flase(array_value):
+    pool =[]
+    for i in array_value:
+        pool.append(i[0])
+    return pool
+
+def per_experence(state,action,reward,fusion_total_state,done,exper_batchsize):
+    # ------------添加经验优先回放-------------
+    next_state = state
+    action = np.expand_dims(action, 0)
+    Store_Sample(fusion_total_state, action, reward, next_state, done)  # 存经验
+    mini_batch, idxs, is_weights = Memory.sample(exper_batchsize)  # 取经验 mini_batch 经验池，idxs 为下标值，is_weights 权重值
+    mini_batch = np.array(mini_batch, dtype=object).transpose()
+    states = np.vstack(mini_batch[0])  #   按理说状态应该从一堆状态中进行采样，看代码看是直接是随机数生成的
+    actions = list(mini_batch[1])
+    rewards = list(mini_batch[2])
+    next_states = np.vstack(mini_batch[3])
+    dones = mini_batch[4]
+    states1 = array_tensor(states)
+    actions1 = array_tensor(actions)
+    rewards1 = array_tensor(rewards)
+    rewards1 = array_value(rewards1)
+    dones = array_flase(dones)
+    is_weights1 = is_weights
+    is_weights1 = array_tensor(is_weights1)
+
+def sorft_attention(state_dim, action_dim,state_image_list,state_ray_list,state_posi_list,has_continuous_action_space):
+    # ---------------使用软注意机制----------------
+    attention = Ture
+    if attention:
+        Attention_net = ActorCritic(state_dim, action_dim, has_continuous_action_space, 0.6)
+        Attention_net = Attention_net.MLP
+        Image_Wight1 = Attention_net(torch.tensor(state_image_list))  # data 为各个传感器的感知权重
+        Ray_Wight2 = Attention_net(torch.tensor(state_ray_list))
+        Pos_Wight3 = Attention_net(torch.tensor(state_posi_list))
+        # ----------------权重映射-----------------------
+        Wight_Dict = dict([('img', Image_Wight1), ('ray', Ray_Wight2), ('pos', Pos_Wight3)])
+        # ----------------权重映射-----------------------
+        # --------------------比较三个不同权重值---------------
+        max_dict_weight = max(zip(Wight_Dict.values(), Wight_Dict.keys()))
+        max_type_weight = max_dict_weight[1]  # 输出为字符
+        if max_type_weight == 'img':
+            state = state_image_list
+            # print("以图像为输入")
+        if max_type_weight == 'ray':
+            state = state_ray_list
+            # print("以雷达为输入")
+        if max_type_weight == 'pos':
+            state = state_posi_list
+            # print("以位置信息为输入")
+        # -----------------使用软注意力机制-----------
 
 def train():
     # -------------------参数--------------------
@@ -617,27 +628,28 @@ def train():
     print("雷达维度：", state_dim[3])
     print("向量维度：", state_dim[4])
 
-    ppo_agent = AMRL_Algorithm(state_dim, action_dim, lr_actor, lr_critic, gamma, K_epochs, eps_clip, action_std)
+    AMRL_agent = AMRL_Algorithm(state_dim, action_dim, lr_actor, lr_critic, gamma, K_epochs, eps_clip, action_std)
+
     # train makeure task
     for episode in range(100):
         state = env.reset()
         state = fusion_total_all_sensor(state)
         for step in range(2000):
-            action = ppo_agent.selection_action(state)
+            action = AMRL_agent.selection_action(state)
             action = np.expand_dims(action, 0)
             state, reward, done, _ = env.step(None, action)
             state = fusion_total_all_sensor(state)
             reward = float(reward[0])
             done = bool(done[0])
-            ppo_agent.buffer.rewards.append(reward)
-            ppo_agent.buffer.is_terminals.append(done)
+            AMRL_agent.buffer.rewards.append(reward)
+            AMRL_agent.buffer.is_terminals.append(done)
             current_ep_reward += reward
             # update PPO agent
             if episode == 2:
-                loss = ppo_agent.network_update()
+                loss = AMRL_agent.network_update()
                 loss2 = loss
             if episode == 2:
-                ppo_agent.decay_action_std(action_std_decay_rate, min_action_std)
+                AMRL_agent.decay_action_std(action_std_decay_rate, min_action_std)
             if episode == 1:
                 print_avg_reward = print_running_reward / print_running_episodes
                 print_avg_reward = round(print_avg_reward, 4) * 100  # 取两位有效数字
@@ -650,7 +662,7 @@ def train():
                 # save model weights
             if episode == 1:
                 print("saving model at : " + checkpoint_path)
-                ppo_agent.save_network_parm(checkpoint_path)
+                AMRL_agent.save_network_parm(checkpoint_path)
                 print("model saved")
             if done:
                 break
@@ -658,6 +670,7 @@ def train():
             print_running_episodes += 1
 
             save_step_episode = save_final_episode(episode)
+
     env.close()
 
 
