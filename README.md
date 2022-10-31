@@ -1,8 +1,8 @@
 <img src="./algorithm/s2rlog/log.png" align="middle" width="2000"/>
 
+## **Goal: Zero migration of the decision model in the virtual scene to the real scene guarantees good adaptivity and stability.**
 
 
-# RL_SR
 # run AMRL 
 # install python=3.9
 #pip install mlagents==0.29.0
