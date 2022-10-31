@@ -28,7 +28,7 @@ def process_image(image_path, file_path='out.txt'):
     print(txt)
 
 def run():
-    image_path, file_path = r'D:\RL_SR\algorithm\s2rlog\s2r1.png', r'D:\RL_SR\algorithm\s2rlog\1.txt'
+    image_path, file_path = './s2r1.png', './1.txt'
     process_image(image_path, file_path)
 
 if __name__ == '__main__':
