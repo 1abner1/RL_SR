@@ -27,6 +27,12 @@
 
 ```
 # Main paper
+[Deep Q-Network (DQN)](https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf)
+[Double DQN](https://arxiv.org/pdf/1509.06461.pdf)
+[Proximal Policy Optimization (PPO)](https://arxiv.org/pdf/1707.06347.pdf)
+[Deep Deterministic Policy Gradient (DDPG)](https://arxiv.org/pdf/1509.02971.pdf)
+[Soft Actor-Critic (SAC)](https://arxiv.org/pdf/1812.05905.pdf)
+[Intrinsic Curiosity Module (ICM)](https://arxiv.org/pdf/1705.05363.pdf)
 
 
 # Reference
