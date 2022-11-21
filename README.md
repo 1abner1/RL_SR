@@ -11,6 +11,17 @@
 # Algorithm
 1) AMDDPG
 2) AMRL
+3) PPO
+4) TRPO
+5) SAC
+6) MAML
+7) DDPG
+8) RL^2
+9) EPG
+10) DQN
+11) DDQN
+
+
 
 # Requirement
 1) python=3.9
@@ -19,6 +30,13 @@
 4) gym 
 5) numpy==1.20.3
 6) torch==1.8.1+cu102 torchvision==0.9.1+cu102 torchaudio===0.8.1 -f https://download.pytorch.org/whl/torch_stable.html
+
+# Function
+1) reinforcement learning 
+2) target detection
+3) Semantic segmentation
+
+
 
 # How to runing
 ```python

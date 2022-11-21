@@ -28,6 +28,7 @@ import os
 import random
 import time
 from per_expericence.prioritized_memory import Memory
+import tqdm
 
 device = torch.device('cpu')
 
@@ -631,7 +632,7 @@ def train():
     AMRL_agent = AMRL_Algorithm(state_dim, action_dim, lr_actor, lr_critic, gamma, K_epochs, eps_clip, action_std)
 
     # train makeure task
-    for episode in range(100):
+    for episode in tqdm(range(100)):
         state = env.reset()
         state = fusion_total_all_sensor(state)
         for step in range(2000):
