@@ -1,3 +1,5 @@
+# 进度条显示
+
 from tqdm import tqdm
 import time
 for i in tqdm(range(10000)):
