@@ -1,0 +1,42 @@
+{
+    "name": "root",
+    "metadata": {
+        "timer_format_version": "0.1.0",
+        "start_time_seconds": "1676191750",
+        "python_version": "3.9.12 (main, Apr  4 2022, 05:22:27) [MSC v.1916 64 bit (AMD64)]",
+        "command_line_arguments": "E:\\Miniconda\\envs\\unity_office\\Scripts\\mlagents-learn D:\\RL_SR\\Unity_office\\poca_ddcl.yaml --torch-device cuda --results-dir=D:\\RL_SR\\plot\\DDCL\\Traindata --run-id=DDCL5",
+        "mlagents_version": "0.29.0",
+        "mlagents_envs_version": "0.29.0",
+        "communication_protocol_version": "1.5.0",
+        "pytorch_version": "1.12.1+cu113",
+        "numpy_version": "1.21.2",
+        "end_time_seconds": "1676191812"
+    },
+    "total": 61.9114719,
+    "count": 1,
+    "self": 0.04355750000000569,
+    "children": {
+        "run_training.setup": {
+            "total": 0.3228572000000005,
+            "count": 1,
+            "self": 0.3228572000000005
+        },
+        "TrainerController.start_learning": {
+            "total": 61.545057199999995,
+            "count": 1,
+            "self": 0.00017819999999346692,
+            "children": {
+                "TrainerController._reset_env": {
+                    "total": 61.544859699999996,
+                    "count": 1,
+                    "self": 61.544859699999996
+                },
+                "TrainerController._save_models": {
+                    "total": 1.9300000005273432e-05,
+                    "count": 1,
+                    "self": 1.9300000005273432e-05
+                }
+            }
+        }
+    }
+}

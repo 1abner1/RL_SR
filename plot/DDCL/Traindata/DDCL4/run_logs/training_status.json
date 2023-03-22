@@ -1,0 +1,30 @@
+{
+    "carconavoid": {
+        "elo": 898.1886648035339,
+        "checkpoints": [
+            {
+                "steps": 123984,
+                "file_path": "D:\\RL_SR\\plot\\DDCL\\Traindata\\DDCL4\\carconavoid\\carconavoid-123984.onnx",
+                "reward": 1.528735632183908,
+                "creation_time": 1676189103.067585,
+                "auxillary_file_paths": [
+                    "D:\\RL_SR\\plot\\DDCL\\Traindata\\DDCL4\\carconavoid\\carconavoid-123984.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 123984,
+            "file_path": "D:\\RL_SR\\plot\\DDCL\\Traindata\\DDCL4\\carconavoid.onnx",
+            "reward": 1.528735632183908,
+            "creation_time": 1676189103.067585,
+            "auxillary_file_paths": [
+                "D:\\RL_SR\\plot\\DDCL\\Traindata\\DDCL4\\carconavoid\\carconavoid-123984.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "0.29.0",
+        "torch_version": "1.12.1+cu113"
+    }
+}

@@ -1,0 +1,57 @@
+{
+    "carconavoid": {
+        "checkpoints": [
+            {
+                "steps": 1499992,
+                "file_path": "D:\\RL_SR\\plot\\DDCL\\Traindata\\DDCL6\\carconavoid\\carconavoid-1499992.onnx",
+                "reward": 4.259858442871588,
+                "creation_time": 1676217682.0964818,
+                "auxillary_file_paths": [
+                    "D:\\RL_SR\\plot\\DDCL\\Traindata\\DDCL6\\carconavoid\\carconavoid-1499992.pt"
+                ]
+            },
+            {
+                "steps": 1999986,
+                "file_path": "D:\\RL_SR\\plot\\DDCL\\Traindata\\DDCL6\\carconavoid\\carconavoid-1999986.onnx",
+                "reward": 4.151943462897527,
+                "creation_time": 1676227207.446292,
+                "auxillary_file_paths": [
+                    "D:\\RL_SR\\plot\\DDCL\\Traindata\\DDCL6\\carconavoid\\carconavoid-1999986.pt"
+                ]
+            },
+            {
+                "steps": 2499988,
+                "file_path": "D:\\RL_SR\\plot\\DDCL\\Traindata\\DDCL6\\carconavoid\\carconavoid-2499988.onnx",
+                "reward": 4.30607476635514,
+                "creation_time": 1676237342.5298693,
+                "auxillary_file_paths": [
+                    "D:\\RL_SR\\plot\\DDCL\\Traindata\\DDCL6\\carconavoid\\carconavoid-2499988.pt"
+                ]
+            },
+            {
+                "steps": 2999987,
+                "file_path": "D:\\RL_SR\\plot\\DDCL\\Traindata\\DDCL6\\carconavoid\\carconavoid-2999987.onnx",
+                "reward": 4.329411764705882,
+                "creation_time": 1676247738.2651675,
+                "auxillary_file_paths": [
+                    "D:\\RL_SR\\plot\\DDCL\\Traindata\\DDCL6\\carconavoid\\carconavoid-2999987.pt"
+                ]
+            },
+            {
+                "steps": 3499987,
+                "file_path": "D:\\RL_SR\\plot\\DDCL\\Traindata\\DDCL6\\carconavoid\\carconavoid-3499987.onnx",
+                "reward": 4.490467937608319,
+                "creation_time": 1676258062.5560498,
+                "auxillary_file_paths": [
+                    "D:\\RL_SR\\plot\\DDCL\\Traindata\\DDCL6\\carconavoid\\carconavoid-3499987.pt"
+                ]
+            }
+        ],
+        "elo": 378.1562961474842
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "0.29.0",
+        "torch_version": "1.12.1+cu113"
+    }
+}
